@@ -27,12 +27,15 @@ spread of the pin capacitance and process corners.
 
 The DC bias applied by the impedance analyzer (0.7–1.5 V) changes the MOS-capacitor values and so tunes Cα by about 8 %.
 
-Simulated performance (SKY130 models, 828 process/bias/temperature/pin cases, best trim code per case):
+Post-layout simulated performance (extracted layout, SKY130 models, 828 process/bias/temperature/pin cases,
+best trim code per case):
 
 | Pin | Phase within ±2.5° of target | Band |
 |---|---|---|
-| `ua[0]` α = 0.7 | 4.15 decades | 126 Hz – 1.78 MHz |
+| `ua[0]` α = 0.7 | 4.12 decades | 126 Hz – 1.68 MHz |
 | `ua[1]` α = 0.5 | 2.12 decades | 1.9 kHz – 251 kHz |
+
+![Layout](layout.png)
 
 ![Top-level schematic](schematic.png)
 
@@ -46,7 +49,7 @@ You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 
 3. Apply 1.0 V DC bias (keep it between 0.7 V and 1.5 V, never above 1.5 V) and a 200 mVrms test signal
    (100 mVrms at 1.5 V bias). Apply bias only after the chip is powered and the project is selected.
 4. Calibrate the trim code: sweep codes 0–31 and keep the one with the flattest phase over the top of the band
-   only (300 kHz – 1.2 MHz for α = 0.7). The rest of the band is then an independent check.
+   only (150 – 600 kHz for α = 0.7, 50 – 200 kHz for α = 0.5). The rest of the band is then an independent check.
 5. Sweep 20 Hz – 10 MHz and fit α and Cα in the constant-phase band.
 6. Repeat at 0.7 V and 1.5 V bias (recalibrating the code) to measure the Cα tuning.
 

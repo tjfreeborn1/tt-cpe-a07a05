@@ -79,6 +79,8 @@ for i in range(5):
         x, y = 900 + 300 * j, -300 + 80 * i
         s.inst('sky130_stdcells/buf_2.sym', x, y, sc.format(n=f'xbuf{"AB"[j]}{i}'))
         s.lab(x - 40, y, src); s.lab(x + 40, y, dst, flip=1)
+        s.inst('sky130_stdcells/diode_2.sym', x - 60, y + 40, sc.format(n=f'xdio{"AB"[j]}{i}'))
+        s.lab(x - 150, y + 40, src)
 k = 0
 for bus in ('uo_out', 'uio_out', 'uio_oe'):
     for b in range(8):

@@ -1,18 +1,16 @@
-* cpe_a05 v4b layout-realistic
+* cpe_a05: as-built (layout v1). R segments, MOS units W=10 L=10, MIM tiles
 .subckt cpe_a05 t
-XR1_0 t 1_s1 0 sky130_fd_pr__res_xhigh_po_0p35 L=51.670 mult=1
-XR1_1 1_s1 n1 0 sky130_fd_pr__res_xhigh_po_0p35 L=51.670 mult=1
+XR1_0 t 1_s1 0 sky130_fd_pr__res_xhigh_po_0p35 L=34.41 mult=1
+XR1_1 1_s1 1_s2 0 sky130_fd_pr__res_xhigh_po_0p35 L=34.41 mult=1
+XR1_2 1_s2 n1 0 sky130_fd_pr__res_xhigh_po_0p35 L=34.41 mult=1
 XM1 0 n1 0 0 sky130_fd_pr__nfet_01v8 W=10 L=10 nf=1 m=97
-XM1p 0 n1 0 0 sky130_fd_pr__nfet_01v8 W=2.673 L=10 nf=1 m=1
-XK1 n1 0 sky130_fd_pr__cap_mim_m3_1 W=28.754 L=28.754 MF=10 m=10
+XK1 n1 0 sky130_fd_pr__cap_mim_m3_1 W=29.96 L=23.25 MF=12 m=12
 XR2_0 t n2 0 sky130_fd_pr__res_xhigh_po_0p35 L=38.771 mult=1
-XM2 0 n2 0 0 sky130_fd_pr__nfet_01v8 W=10 L=10 nf=1 m=82
-XM2p 0 n2 0 0 sky130_fd_pr__nfet_01v8 W=5.494 L=10 nf=1 m=1
-XK2 n2 0 sky130_fd_pr__cap_mim_m3_1 W=29.616 L=29.616 MF=8 m=8
+XM2 0 n2 0 0 sky130_fd_pr__nfet_01v8 W=10 L=10 nf=1 m=83
+XK2 n2 0 sky130_fd_pr__cap_mim_m3_1 W=29.96 L=28.57 MF=8 m=8
 XR3_0 t n3 0 sky130_fd_pr__res_xhigh_po_0p35 L=8.823 mult=1
 XM3 0 n3 0 0 sky130_fd_pr__nfet_01v8 W=10 L=10 nf=1 m=34
-XM3p 0 n3 0 0 sky130_fd_pr__nfet_01v8 W=2.722 L=10 nf=1 m=1
-XK3 n3 0 sky130_fd_pr__cap_mim_m3_1 W=26.987 L=26.987 MF=4 m=4
+XK3 n3 0 sky130_fd_pr__cap_mim_m3_1 W=29.96 L=25.16 MF=4 m=4
 XRp_0 t p_s1 0 sky130_fd_pr__res_xhigh_po_0p35 L=59.651 mult=1
 XRp_1 p_s1 0 0 sky130_fd_pr__res_xhigh_po_0p35 L=59.651 mult=1
 .ends

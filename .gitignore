@@ -21,3 +21,4 @@ sim/tb/r.spice
 sim/tb/tbout
 sim/tb/refout
 __pycache__/
+layout_build/

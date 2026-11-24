@@ -20,8 +20,8 @@ Top module: `tt_um_tjfreeborn1_cpe_a07a05`. Datasheet text: [docs/info.md](docs/
 | Design and simulation (v4b) | Done: 4.15 decades (α = 0.7) and 2.12 decades (α = 0.5) within ±2.5° over 828 corner/bias/temperature/pin cases |
 | Model check with as-drawn netlists | Done: no change |
 | Xschem schematic, netgen check against simulation | Done |
-| Layout (Magic) | Next — `gds/` and `lef/` do not exist yet, so the `gds` workflow fails until then |
-| DRC / LVS / extraction | Planned |
+| Layout v1 (Magic, script-generated) | Done: `gds/`, `lef/`, generator in `layout/` |
+| DRC / LVS / precheck / post-layout simulation | Done: precheck passes locally, LVS clean, post-layout 4.12 / 2.12 decades (`verification/`) |
 | Submission | Planned (TTSKY27a; workflow tags will move from `ttsky26d` to the TTSKY27a release) |
 
 ## Repository layout
@@ -35,7 +35,10 @@ netlist/sim/       Xschem simulation netlist of the top cell
 netlist/lvs/       Xschem LVS netlist of the top cell (top level as .subckt)
 sim/netlists/      As-drawn SPICE netlists of the two networks and the trim bank (source of truth)
 sim/               Corner simulation and analysis scripts; sim/tb/ = top-level sanity testbench
-gds/, lef/, mag/   Layout (to come)
+gds/, lef/         Layout (GDS) and pin-only LEF
+layout/            Layout generator scripts (Magic Tcl from Python) and the TT 2x2 DEF
+verification/      Precheck, LVS and post-layout results
+sim/pex/           Parasitic extraction netlist and post-layout corner simulation
 ```
 
 ## Reproducing
