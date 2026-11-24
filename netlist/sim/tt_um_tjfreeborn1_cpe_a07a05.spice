@@ -1,0 +1,193 @@
+** sch_path: xschem/tt_um_tjfreeborn1_cpe_a07a05.sch
+**.subckt tt_um_tjfreeborn1_cpe_a07a05 VGND VDPWR ui_in[7],ui_in[6],ui_in[5],ui_in[4],ui_in[3],ui_in[2],ui_in[1],ui_in[0]
+*+ uio_in[7],uio_in[6],uio_in[5],uio_in[4],uio_in[3],uio_in[2],uio_in[1],uio_in[0] ena clk rst_n uo_out[7],uo_out[6],uo_out[5],uo_out[4],uo_out[3],uo_out[2],uo_out[1],uo_out[0]
+*+ uio_out[7],uio_out[6],uio_out[5],uio_out[4],uio_out[3],uio_out[2],uio_out[1],uio_out[0] uio_oe[7],uio_oe[6],uio_oe[5],uio_oe[4],uio_oe[3],uio_oe[2],uio_oe[1],uio_oe[0] ua[7],ua[6],ua[5],ua[4],ua[3],ua[2],ua[1],ua[0]
+*.ipin VGND
+*.ipin VDPWR
+*.ipin ui_in[7],ui_in[6],ui_in[5],ui_in[4],ui_in[3],ui_in[2],ui_in[1],ui_in[0]
+*.ipin uio_in[7],uio_in[6],uio_in[5],uio_in[4],uio_in[3],uio_in[2],uio_in[1],uio_in[0]
+*.ipin ena
+*.ipin clk
+*.ipin rst_n
+*.opin uo_out[7],uo_out[6],uo_out[5],uo_out[4],uo_out[3],uo_out[2],uo_out[1],uo_out[0]
+*.opin uio_out[7],uio_out[6],uio_out[5],uio_out[4],uio_out[3],uio_out[2],uio_out[1],uio_out[0]
+*.opin uio_oe[7],uio_oe[6],uio_oe[5],uio_oe[4],uio_oe[3],uio_oe[2],uio_oe[1],uio_oe[0]
+*.iopin ua[7],ua[6],ua[5],ua[4],ua[3],ua[2],ua[1],ua[0]
+xcpe07 ua[0] VGND cpe_a07
+xcpe05 ua[1] VGND cpe_a05
+xbank07 ua[0] gA0 gA1 gA2 gA3 gA4 VGND trimbank
+xbank05 ua[1] gB0 gB1 gB2 gB3 gB4 VGND trimbank
+xbufA0 ui_in[0] VGND VGND VDPWR VDPWR gA0 sky130_fd_sc_hd__buf_2
+xbufB0 uio_in[0] VGND VGND VDPWR VDPWR gB0 sky130_fd_sc_hd__buf_2
+xbufA1 ui_in[1] VGND VGND VDPWR VDPWR gA1 sky130_fd_sc_hd__buf_2
+xbufB1 uio_in[1] VGND VGND VDPWR VDPWR gB1 sky130_fd_sc_hd__buf_2
+xbufA2 ui_in[2] VGND VGND VDPWR VDPWR gA2 sky130_fd_sc_hd__buf_2
+xbufB2 uio_in[2] VGND VGND VDPWR VDPWR gB2 sky130_fd_sc_hd__buf_2
+xbufA3 ui_in[3] VGND VGND VDPWR VDPWR gA3 sky130_fd_sc_hd__buf_2
+xbufB3 uio_in[3] VGND VGND VDPWR VDPWR gB3 sky130_fd_sc_hd__buf_2
+xbufA4 ui_in[4] VGND VGND VDPWR VDPWR gA4 sky130_fd_sc_hd__buf_2
+xbufB4 uio_in[4] VGND VGND VDPWR VDPWR gB4 sky130_fd_sc_hd__buf_2
+xtie0 VGND VGND VDPWR VDPWR nc_hi0 uo_out[0] sky130_fd_sc_hd__conb_1
+xtie1 VGND VGND VDPWR VDPWR nc_hi1 uo_out[1] sky130_fd_sc_hd__conb_1
+xtie2 VGND VGND VDPWR VDPWR nc_hi2 uo_out[2] sky130_fd_sc_hd__conb_1
+xtie3 VGND VGND VDPWR VDPWR nc_hi3 uo_out[3] sky130_fd_sc_hd__conb_1
+xtie4 VGND VGND VDPWR VDPWR nc_hi4 uo_out[4] sky130_fd_sc_hd__conb_1
+xtie5 VGND VGND VDPWR VDPWR nc_hi5 uo_out[5] sky130_fd_sc_hd__conb_1
+xtie6 VGND VGND VDPWR VDPWR nc_hi6 uo_out[6] sky130_fd_sc_hd__conb_1
+xtie7 VGND VGND VDPWR VDPWR nc_hi7 uo_out[7] sky130_fd_sc_hd__conb_1
+xtie8 VGND VGND VDPWR VDPWR nc_hi8 uio_out[0] sky130_fd_sc_hd__conb_1
+xtie9 VGND VGND VDPWR VDPWR nc_hi9 uio_out[1] sky130_fd_sc_hd__conb_1
+xtie10 VGND VGND VDPWR VDPWR nc_hi10 uio_out[2] sky130_fd_sc_hd__conb_1
+xtie11 VGND VGND VDPWR VDPWR nc_hi11 uio_out[3] sky130_fd_sc_hd__conb_1
+xtie12 VGND VGND VDPWR VDPWR nc_hi12 uio_out[4] sky130_fd_sc_hd__conb_1
+xtie13 VGND VGND VDPWR VDPWR nc_hi13 uio_out[5] sky130_fd_sc_hd__conb_1
+xtie14 VGND VGND VDPWR VDPWR nc_hi14 uio_out[6] sky130_fd_sc_hd__conb_1
+xtie15 VGND VGND VDPWR VDPWR nc_hi15 uio_out[7] sky130_fd_sc_hd__conb_1
+xtie16 VGND VGND VDPWR VDPWR nc_hi16 uio_oe[0] sky130_fd_sc_hd__conb_1
+xtie17 VGND VGND VDPWR VDPWR nc_hi17 uio_oe[1] sky130_fd_sc_hd__conb_1
+xtie18 VGND VGND VDPWR VDPWR nc_hi18 uio_oe[2] sky130_fd_sc_hd__conb_1
+xtie19 VGND VGND VDPWR VDPWR nc_hi19 uio_oe[3] sky130_fd_sc_hd__conb_1
+xtie20 VGND VGND VDPWR VDPWR nc_hi20 uio_oe[4] sky130_fd_sc_hd__conb_1
+xtie21 VGND VGND VDPWR VDPWR nc_hi21 uio_oe[5] sky130_fd_sc_hd__conb_1
+xtie22 VGND VGND VDPWR VDPWR nc_hi22 uio_oe[6] sky130_fd_sc_hd__conb_1
+xtie23 VGND VGND VDPWR VDPWR nc_hi23 uio_oe[7] sky130_fd_sc_hd__conb_1
+**.ends
+
+* expanding   symbol:  cpe_a07.sym # of pins=2
+** sym_path: xschem/cpe_a07.sym
+** sch_path: xschem/cpe_a07.sch
+.subckt cpe_a07 t VGND
+*.iopin t
+*.iopin VGND
+XRR1_0 1_s1 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XRR1_1 1_s2 1_s1 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XRR1_2 1_s3 1_s2 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XRR1_3 1_s4 1_s3 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XRR1_4 1_s5 1_s4 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XRR1_5 1_s6 1_s5 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XRR1_6 n1 1_s6 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.453 mult=1
+XMM1 VGND n1 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=107 m=107
+XMM1p VGND n1 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=6.133 nf=1 ad=1.77857 as=1.77857 pd=12.846 ps=12.846 nrd=0.0472851785423121
++ nrs=0.0472851785423121 sa=0 sb=0 sd=0 mult=1
+XCK1 n1 VGND sky130_fd_pr__cap_mim_m3_1 W=28.837 L=28.837 MF=11 m=11
+XRR2_0 2_s1 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=73.019 mult=1
+XRR2_1 2_s2 2_s1 VGND sky130_fd_pr__res_xhigh_po_0p35 L=73.019 mult=1
+XRR2_2 n2 2_s2 VGND sky130_fd_pr__res_xhigh_po_0p35 L=73.019 mult=1
+XMM2 VGND n2 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=45 m=45
+XMM2p VGND n2 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=5.520 nf=1 ad=1.6008 as=1.6008 pd=11.62 ps=11.62 nrd=0.052536231884058
++ nrs=0.052536231884058 sa=0 sb=0 sd=0 mult=1
+XCK2 n2 VGND sky130_fd_pr__cap_mim_m3_1 W=27.828 L=27.828 MF=5 m=5
+XRR3_0 n3 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=57.804 mult=1
+XMM3 VGND n3 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=28 m=28
+XMM3p VGND n3 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=9.451 nf=1 ad=2.74079 as=2.74079 pd=19.482 ps=19.482 nrd=0.0306845836419426
++ nrs=0.0306845836419426 sa=0 sb=0 sd=0 mult=1
+XCK3 n3 VGND sky130_fd_pr__cap_mim_m3_1 W=28.638 L=28.638 MF=3 m=3
+XRR4_0 n4 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=14.920 mult=1
+XMM4 VGND n4 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=17 m=17
+XMM4p VGND n4 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=7.468 nf=1 ad=2.16572 as=2.16572 pd=15.516 ps=15.516 nrd=0.0388323513658275
++ nrs=0.0388323513658275 sa=0 sb=0 sd=0 mult=1
+XCK4 n4 VGND sky130_fd_pr__cap_mim_m3_1 W=27.463 L=27.463 MF=2 m=2
+XRR5_0 n5 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=2.602 mult=1
+XMM5 VGND n5 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=13 m=13
+XMM5p VGND n5 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=1.883 nf=1 ad=0.54607 as=0.54607 pd=4.346 ps=4.346 nrd=0.15400955921402
++ nrs=0.15400955921402 sa=0 sb=0 sd=0 mult=1
+XCK5 n5 VGND sky130_fd_pr__cap_mim_m3_1 W=23.675 L=23.675 MF=2 m=2
+XRRp_0 p_s1 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_1 p_s2 p_s1 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_2 p_s3 p_s2 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_3 p_s4 p_s3 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_4 p_s5 p_s4 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_5 p_s6 p_s5 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_6 p_s7 p_s6 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_7 p_s8 p_s7 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_8 p_s9 p_s8 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_9 p_s10 p_s9 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_10 p_s11 p_s10 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_11 p_s12 p_s11 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_12 p_s13 p_s12 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_13 p_s14 p_s13 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_14 p_s15 p_s14 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_15 p_s16 p_s15 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_16 p_s17 p_s16 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_17 p_s18 p_s17 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_18 p_s19 p_s18 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_19 p_s20 p_s19 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_20 p_s21 p_s20 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_21 p_s22 p_s21 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_22 p_s23 p_s22 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_23 p_s24 p_s23 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_24 p_s25 p_s24 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_25 p_s26 p_s25 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_26 p_s27 p_s26 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_27 p_s28 p_s27 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_28 p_s29 p_s28 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_29 p_s30 p_s29 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_30 p_s31 p_s30 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+XRRp_31 VGND p_s31 VGND sky130_fd_pr__res_xhigh_po_0p35 L=98.426 mult=1
+.ends
+
+
+* expanding   symbol:  cpe_a05.sym # of pins=2
+** sym_path: xschem/cpe_a05.sym
+** sch_path: xschem/cpe_a05.sch
+.subckt cpe_a05 t VGND
+*.iopin t
+*.iopin VGND
+XRR1_0 1_s1 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=51.670 mult=1
+XRR1_1 n1 1_s1 VGND sky130_fd_pr__res_xhigh_po_0p35 L=51.670 mult=1
+XMM1 VGND n1 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=97 m=97
+XMM1p VGND n1 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=2.673 nf=1 ad=0.77517 as=0.77517 pd=5.926 ps=5.926 nrd=0.108492330714553
++ nrs=0.108492330714553 sa=0 sb=0 sd=0 mult=1
+XCK1 n1 VGND sky130_fd_pr__cap_mim_m3_1 W=28.754 L=28.754 MF=10 m=10
+XRR2_0 n2 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=38.771 mult=1
+XMM2 VGND n2 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=82 m=82
+XMM2p VGND n2 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=5.494 nf=1 ad=1.59326 as=1.59326 pd=11.568 ps=11.568 nrd=0.052784856206771
++ nrs=0.052784856206771 sa=0 sb=0 sd=0 mult=1
+XCK2 n2 VGND sky130_fd_pr__cap_mim_m3_1 W=29.616 L=29.616 MF=8 m=8
+XRR3_0 n3 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=8.823 mult=1
+XMM3 VGND n3 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=10 nf=1 ad=2.9 as=2.9 pd=20.58 ps=20.58 nrd=0.029 nrs=0.029 sa=0 sb=0 sd=0
++ mult=34 m=34
+XMM3p VGND n3 VGND VGND sky130_fd_pr__nfet_01v8 L=10 W=2.722 nf=1 ad=0.78938 as=0.78938 pd=6.024 ps=6.024 nrd=0.106539309331374
++ nrs=0.106539309331374 sa=0 sb=0 sd=0 mult=1
+XCK3 n3 VGND sky130_fd_pr__cap_mim_m3_1 W=26.987 L=26.987 MF=4 m=4
+XRRp_0 p_s1 t VGND sky130_fd_pr__res_xhigh_po_0p35 L=59.651 mult=1
+XRRp_1 VGND p_s1 VGND sky130_fd_pr__res_xhigh_po_0p35 L=59.651 mult=1
+.ends
+
+
+* expanding   symbol:  trimbank.sym # of pins=7
+** sym_path: xschem/trimbank.sym
+** sch_path: xschem/trimbank.sch
+.subckt trimbank t g0 g1 g2 g3 g4 VGND
+*.iopin t
+*.iopin g0
+*.iopin g1
+*.iopin g2
+*.iopin g3
+*.iopin g4
+*.iopin VGND
+XCK0 t b0 sky130_fd_pr__cap_mim_m3_1 W=12.084 L=12.084 MF=1
+XMS0 b0 g0 VGND VGND sky130_fd_pr__nfet_01v8 L=0.15 W=3.00 nf=1 ad=0.87 as=0.87 pd=6.58 ps=6.58 nrd=0.0966666666666667
++ nrs=0.0966666666666667 sa=0 sb=0 sd=0 mult=1
+XCK1 t b1 sky130_fd_pr__cap_mim_m3_1 W=17.156 L=17.156 MF=1
+XMS1 b1 g1 VGND VGND sky130_fd_pr__nfet_01v8 L=0.15 W=6.00 nf=1 ad=1.74 as=1.74 pd=12.58 ps=12.58 nrd=0.0483333333333333
++ nrs=0.0483333333333333 sa=0 sb=0 sd=0 mult=1
+XCK2 t b2 sky130_fd_pr__cap_mim_m3_1 W=24.331 L=24.331 MF=1
+XMS2 b2 g2 VGND VGND sky130_fd_pr__nfet_01v8 L=0.15 W=12.00 nf=1 ad=3.48 as=3.48 pd=24.58 ps=24.58 nrd=0.0241666666666667
++ nrs=0.0241666666666667 sa=0 sb=0 sd=0 mult=1
+XCK3 t b3 sky130_fd_pr__cap_mim_m3_1 W=24.331 L=24.331 MF=2 m=2
+XMS3 b3 g3 VGND VGND sky130_fd_pr__nfet_01v8 L=0.15 W=24.00 nf=1 ad=6.96 as=6.96 pd=48.58 ps=48.58 nrd=0.0120833333333333
++ nrs=0.0120833333333333 sa=0 sb=0 sd=0 mult=1
+XCK4 t b4 sky130_fd_pr__cap_mim_m3_1 W=24.331 L=24.331 MF=4 m=4
+XMS4 b4 g4 VGND VGND sky130_fd_pr__nfet_01v8 L=0.15 W=48.00 nf=1 ad=13.92 as=13.92 pd=96.58 ps=96.58 nrd=0.00604166666666667
++ nrs=0.00604166666666667 sa=0 sb=0 sd=0 mult=1
+.ends
+
+.end

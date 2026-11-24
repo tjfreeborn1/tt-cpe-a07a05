@@ -1,0 +1,18 @@
+* reference: v4bL simulation netlists, same codes
+.lib PDKPATH/libs.tech/ngspice/sky130.lib.spice tt
+.include ../netlists/cpe_a07.spice
+.include ../netlists/cpe_a05.spice
+.include ../netlists/trimbank.spice
+VA ta 0 dc 1.0 ac 1
+XA ta cpe_a07
+XKA ta GA0 GA1 GA2 GA3 GA4 trimbank
+VB tb 0 dc 1.0 ac 1
+XB tb cpe_a05
+XKB tb GB0 GB1 GB2 GB3 GB4 trimbank
+GSRC
+.control
+set wr_singlescale
+ac dec 10 10 100meg
+wrdata refout real(-1/i(VA)) imag(-1/i(VA)) real(-1/i(VB)) imag(-1/i(VB))
+.endc
+.end

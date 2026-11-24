@@ -1,0 +1,27 @@
+* top-level sanity check: Xschem netlist of tt_um_tjfreeborn1_cpe_a07a05, tt corner, 1.0 V bias
+.lib PDKPATH/libs.tech/ngspice/sky130.lib.spice tt
+.include PDKPATH/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice
+.include ../../netlist/sim/tt_um_tjfreeborn1_cpe_a07a05.spice
+.param codeA=CODEA codeB=CODEB
+VDD VDPWR 0 1.8
+VSS VGND 0 0
+Vu0 ui_in[0] 0 {1.8*(codeA%2)}
+Vu1 ui_in[1] 0 {1.8*(floor(codeA/2)%2)}
+Vu2 ui_in[2] 0 {1.8*(floor(codeA/4)%2)}
+Vu3 ui_in[3] 0 {1.8*(floor(codeA/8)%2)}
+Vu4 ui_in[4] 0 {1.8*(floor(codeA/16)%2)}
+Vb0 uio_in[0] 0 {1.8*(codeB%2)}
+Vb1 uio_in[1] 0 {1.8*(floor(codeB/2)%2)}
+Vb2 uio_in[2] 0 {1.8*(floor(codeB/4)%2)}
+Vb3 uio_in[3] 0 {1.8*(floor(codeB/8)%2)}
+Vb4 uio_in[4] 0 {1.8*(floor(codeB/16)%2)}
+VA ua[0] 0 dc 1.0 ac 1
+VB ua[1] 0 dc 1.0 ac 1
+.control
+set wr_singlescale
+op
+print v(gA0) v(gA4) v(gB0) v(gB4) i(VDD)
+ac dec 10 10 100meg
+wrdata tbout real(-1/i(VA)) imag(-1/i(VA)) real(-1/i(VB)) imag(-1/i(VB))
+.endc
+.end

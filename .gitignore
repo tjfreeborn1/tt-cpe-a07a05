@@ -1,0 +1,23 @@
+.DS_Store
+.idea
+.vscode
+*.vcd
+runs
+tt_submission
+src/user_config.tcl
+test/sim_build
+test/__pycache__/
+test/results.xml
+test/gate_level_netlist.v
+# simulation outputs
+sim/zv_*.npz
+sim/zz*.dat
+sim/cc*.spice
+sim/cs*.log
+sim/.spiceinit
+sim/tb/.spiceinit
+sim/tb/t.spice
+sim/tb/r.spice
+sim/tb/tbout
+sim/tb/refout
+__pycache__/
