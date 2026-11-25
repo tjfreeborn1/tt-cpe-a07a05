@@ -1,7 +1,7 @@
 import numpy as np, subprocess
 import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)) if _o.path.basename(_o.path.dirname(_o.path.abspath(__file__)))=='signoff' else _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), '..'))
 from common import run_ngspice, fresh, bank_y, LIB, PDK_NG, PEX, ASBUILT, GDS, REPO
-P='/home/claude/pdk/share/pdk/sky130A/libs.tech/ngspice'
+P=PDK_NG  # from PDK_ROOT (common.py)
 def sim(code,src):
     g=['vdd' if code>>i&1 else 'gnd0' for i in range(5)]
     ac={'sig':('ac 1','ac 0','ac 0','ac 0'),'vdd':('ac 0','ac 0','ac 1','ac 0'),'gate':('ac 0','ac 0','ac 0','ac 1'),'xt':('ac 0','ac 1','ac 0','ac 0')}[src]

@@ -275,10 +275,11 @@ the element. The generator output must remain within the safe operating limits g
 6. **Determine the best trim code.** Measure the phase from 20 Hz to 10 MHz for each code from 0 to 31 and select the
    code with the widest continuous band within ±2.5° of −90α°. This requires 32 sweeps (approximately 15 min to
    30 min per pin).
-   - Export each sweep as `code00.csv` to `code31.csv` in one folder, with columns of frequency (Hz), |Z| (Ω), and
-     phase (degrees), which matches the |Z|-θ trace export of the E4990A. Then run
+   - Save the |Z| and θ traces of each sweep (Save/Recall > Save Trace Data) as `code00.csv` to `code31.csv` in one
+     folder, where the analysis script finds the columns from the header line of the E4990A file. Then run
      `python3 test/analyze_e4990.py <folder> --alpha 0.7` (or `--alpha 0.5`), which selects the code, reports the
-     ±2.5° and ±3° bands, and fits α and Cα. Sample input is provided in `test/example_data/`.
+     ±2.5° and ±3° bands, and fits α and Cα. Installation, accepted file formats, sample input, and the tests for the
+     script are described in `test/README.md`.
    - It is important to note that the ±2.5° limit acts as a sharp threshold, as the simulated in-band ripple is
      approximately ±2.2° and selecting a code one step away from the best code reduces the band by 0.3 to 0.4
      decades. Therefore, the phase accuracy of the analyzer and any compensation residue are important, and the ±3°

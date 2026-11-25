@@ -1,5 +1,5 @@
 import subprocess, re
-P='/home/claude/pdk/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice'
+import os; P=os.path.join(os.environ.get('PDK_ROOT', '/usr/local/share/pdk'), 'sky130A', 'libs.tech', 'ngspice', 'sky130.lib.spice')
 def run(lib,T,vb,ctrl):
     s=f"""* asw char
 .lib {P} {lib}

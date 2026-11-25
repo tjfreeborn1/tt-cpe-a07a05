@@ -2,9 +2,14 @@
 """Analyze E4990A sweeps of the CPE chip: choose the trim code, report the constant-phase band, fit alpha and C_alpha.
 
 Input: a directory with one CSV per trim code, named code00.csv ... code31.csv (missing codes are skipped).
-Accepted CSV layouts (header lines starting with '!', '#' or text are skipped; comma, semicolon or tab separated):
-  freq_Hz, |Z|_ohm, theta_deg        (default; E4990A "|Z|-theta" trace export)
+Accepted CSV layouts (comment lines starting with '!' or '#' and other text lines are skipped; comma, semicolon,
+tab or space separated):
+  E4990A Save Trace Data export with |Z| and theta traces: columns are found by the header line
+    'Frequency(Hz), |Z|(Ohm)-data, theta-z(deg)-data, ...' in any order; memory columns are ignored; theta in rad is
+    converted if the header says so.
+  freq_Hz, |Z|_ohm, theta_deg        (no header: columns taken in this order)
   freq_Hz, R_ohm, X_ohm              (use --rx)
+A file whose phase column is all zero (a single-trace export) is rejected with an error.
 
 Method (as in docs/info.md):
 - The band is the widest contiguous run between 20 Hz and 10 MHz where the phase stays within +-tol of -90*alpha
@@ -20,21 +25,58 @@ import argparse, glob, os, re, sys
 import numpy as np
 
 
+def _split(line):
+    parts = [p.strip().strip('"') for p in re.split(r'[,;\t]', line)]
+    parts = [p for p in parts if p]
+    return parts if len(parts) > 1 else line.split()
+
+
+def _find(names, pred):
+    for i, n in enumerate(names):
+        if pred(n) and 'mem' not in n: return i
+    return None
+
+
 def load(fn, rx=False):
-    rows = []
+    """Read one sweep. Columns are found by the header line if there is one (the E4990A writes
+    'Frequency(Hz), |Z|(Ohm)-data, theta-z(deg)-data, ...'); memory columns are ignored. Without a usable header the
+    columns are taken in order: frequency, |Z|, theta (or frequency, R, X with rx=True)."""
+    names, rows = None, []
     for line in open(fn, encoding='utf-8', errors='replace'):
-        parts = [p for p in re.split(r'[,;\t ]+', line.strip()) if p]
+        s = line.strip()
+        if not s or s[0] in '!#': continue
+        parts = _split(s)
         try:
-            vals = [float(p) for p in parts[:3]]
+            vals = [float(p) for p in parts]
         except ValueError:
+            if parts and parts[0].lower().startswith('freq'): names = [p.lower() for p in parts]
             continue
-        if len(vals) == 3: rows.append(vals)
-    a = np.array(rows)
-    if a.size == 0: raise ValueError(f'no numeric rows in {fn}')
-    a = a[np.argsort(a[:, 0])]
-    f = a[:, 0]
-    z = a[:, 1] + 1j * a[:, 2] if rx else a[:, 1] * np.exp(1j * np.radians(a[:, 2]))
-    if not np.all(np.isfinite(z)): raise ValueError(f'non-finite data in {fn}')
+        if len(vals) >= 3: rows.append(vals)
+    if not rows: raise ValueError(f'no numeric rows in {fn}')
+    ncol = min(len(r) for r in rows)
+    a = np.array([r[:ncol] for r in rows])
+    i1, i2, rad = 1, 2, False
+    if names:
+        if rx:
+            j1, j2 = _find(names, lambda n: n.startswith('r')), _find(names, lambda n: n.startswith('x'))
+        else:
+            j1 = _find(names, lambda n: '|z|' in n or n.startswith('z'))
+            j2 = _find(names, lambda n: 'theta' in n or 'θ' in n or 'phase' in n)
+        if j1 is not None and j2 is not None:
+            if max(j1, j2) >= ncol: raise ValueError(f'{fn}: header names more columns than the data rows hold')
+            i1, i2 = j1, j2
+            rad = not rx and 'rad' in names[j2]
+    a = a[np.argsort(a[:, 0], kind='stable')]
+    f, c1, c2 = a[:, 0], a[:, i1], a[:, i2]
+    if rx:
+        z = c1 + 1j * c2
+    else:
+        if np.all(c2 == 0):
+            raise ValueError(f'{fn}: the phase column is all zero. The file probably holds a single trace; save both '
+                             'the |Z| and theta traces (Save/Recall > Save Trace Data with both traces displayed).')
+        if np.any(c1 <= 0): raise ValueError(f'{fn}: |Z| column has zero or negative values; is it really |Z|?')
+        z = c1 * np.exp(1j * (c2 if rad else np.radians(c2)))
+    if not np.all(np.isfinite(z)) or not np.all(f > 0): raise ValueError(f'non-finite data or non-positive frequency in {fn}')
     return f, z
 
 
