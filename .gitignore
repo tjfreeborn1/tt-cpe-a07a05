@@ -26,3 +26,6 @@ sim/signoff/mc/out2_*/
 sim/signoff/mc/tmp2/
 sim/signoff/mc/lane2*.log
 __pycache__/
+sim/signoff/v1/out/
+sim/signoff/v1/tmp/
+sim/signoff/v1/*.log

@@ -41,3 +41,4 @@ are unaffected.
 - `signoff_C.md`: control path, coupling, reliability.
 - `signoff_D.md`: independent review and the resulting fixes.
 - `signoff_D12.md`: the CI build artifact matches the verified GDS; physical checks re-run on the committed file.
+- `signoff_V.md`: extra validation (model-error envelope, TT switch and board, model physics, measurement rehearsal).

@@ -55,31 +55,51 @@ models):
 
 You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 20 Hz – 10 MHz).
 
-1. Power the board and select this project. Set all of `ui_in[4:0]` and `uio_in[4:0]` low (code 0).
-2. Connect the analyzer between `ua[0]` (or `ua[1]`) and ground with short leads, after open/short/load fixture
-   compensation.
-3. **Set the test-signal level before connecting.** The E4990A defaults to 500 mVrms, which is too large. Use
-   100 mVrms (50 mVrms at 0.7 V bias). Then apply 1.0 V DC bias, kept between 0.7 V and 1.5 V. Apply the bias only
-   after the chip is powered and the project is selected.
+1. **Prepare the board.** The TT ETR demoboard v3 has a 10 MΩ pull-down to ground on every analog pin. Lift it on
+   the two pins used, or measure the carrier without the demoboard. Left in place it sits in parallel with the
+   α = 0.7 element (whose own parallel resistor is 18 MΩ) and erases the bottom decade of its band.
+2. **Compensate as close to the chip as possible, without the chip.** Do open/short compensation at the demoboard
+   analog header with the ASIC carrier removed, or at the carrier pins.
+   - **Do not** take the "open" with the project deselected. That subtracts the on-chip bus and pad capacitance
+     (about 4 pF), which the design counts as part of its top-end capacitance, and the bands collapse (α = 0.5 to
+     about 1–1.8 decades).
+   - Uncompensated external capacitance (carrier trace, leads) should stay at or below about 5 pF. The trim can
+     absorb about 6 pF; beyond that the best code goes to 0 and the band collapses.
+3. Power the board and select this project. Set all of `ui_in[4:0]` and `uio_in[4:0]` low (code 0).
+4. **Set the test-signal level before connecting.** The E4990A defaults to 500 mVrms, which is too large. Then apply
+   1.0 V DC bias, kept between 0.7 V and 1.5 V. Apply the bias only after the chip is powered and the project is
+   selected.
    - DC bias is required: the MOS capacitors need at least about 0.5 V on the pin. With no bias the constant-phase
      band collapses to under one decade.
    - Keep (bias − peak signal) ≥ 0.5 V and (bias + peak signal) ≤ 1.8 V. At 1.0 V bias that allows at most
      0.35 Vrms.
+   - **Recommended: a segment sweep,** 300 mVrms below 10 kHz and 100 mVrms above. Below about 1 kHz the α = 0.7
+     element is 1–6 MΩ, where the E4990A's guaranteed phase accuracy at 100 mVrms is only ±0.9° (1 kHz) to ±4–5°
+     (100 Hz). At 300 mVrms it is ±1.5° at 126 Hz. In simulation the larger signal moves the phase by only 0.04°.
    - At 1.0 V bias and 100 mVrms, the simulated current distortion is 0.3–0.4 % at 1–2 kHz. The impedance changes by
      less than 0.1 % compared with a 10 mVrms signal.
-4. Calibrate the trim code: measure the phase from 20 Hz to 10 MHz for each code 0–31 and keep the code with the
+5. Calibrate the trim code: measure the phase from 20 Hz to 10 MHz for each code 0–31 and keep the code with the
    widest continuous band within ±2.5° of −90α°. This takes 32 sweeps, about 10 minutes per pin.
+   `test/analyze_e4990.py` does this from the 32 exported files and fits α and Cα.
    - The ±2.5° figure is a cliff. The simulated in-band phase ripple is about ±2.2°, so being one code off costs
      0.3–0.4 decades. Analyzer phase accuracy and fixture-compensation residue therefore matter.
    - Report the ±3° band as well.
-   The quicker shortcut of picking the flattest phase over only the top of the band (150 – 600 kHz for α = 0.7,
-   50 – 200 kHz for α = 0.5) is not recommended. In simulation it picks a code one to three steps off for about 1 % of
-   chips, mostly when the pin resistance is high and the pin capacitance small, and that can cut the α = 0.7 band to
-   about 2.2 decades.
-5. Sweep 20 Hz – 10 MHz and fit α and Cα in the constant-phase band. Leave the other analog pin unconnected or
-   idle while measuring. The on-chip crosstalk between `ua[0]` and `ua[1]` is −54 dB at 10 MHz; package and
-   board coupling will be larger.
-6. Repeat at 0.7 V and 1.5 V bias (recalibrating the code) to measure the Cα tuning.
+   - Sanity check: the best code should lie between 1 and 30. Code 0 means too much uncompensated external
+     capacitance. Code 31 means less than designed for, for example when the bus capacitance was compensated away.
+   - The quicker shortcut of picking the flattest phase over only the top of the band (150 – 600 kHz for α = 0.7,
+     50 – 200 kHz for α = 0.5) is not recommended. In simulation it picks a code one to three steps off for about 1 %
+     of chips, mostly when the pin resistance is high and the pin capacitance small. That can cut the α = 0.7 band
+     to about 2.2 decades.
+6. Leave the other analog pin unconnected or idle while measuring. The on-chip crosstalk between `ua[0]` and `ua[1]`
+   is −54 dB at 10 MHz; package and board coupling will be larger.
+7. Repeat at 0.7 V and 1.5 V bias, recalibrating the code each time, to measure the Cα tuning.
+
+**Expected measurement result.** A simulated rehearsal fed synthetic E4990A data, at both typical and guaranteed-limit
+analyzer accuracy, through this procedure. It used 100 Monte Carlo chips, the extracted TT switch, bus and board,
+compensation at the header and a segment sweep:
+- α = 0.7: median 4.29–4.33 decades, 95 % of chips above 3.87–3.97.
+- α = 0.5: median 2.34 decades, 95 % above 2.31.
+- The chosen code is the chip's best code in 86–98 % of cases, and always within one code.
 
 ### Safe operating limits
 
