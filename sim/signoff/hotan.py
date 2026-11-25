@@ -1,4 +1,6 @@
 import numpy as np, glob, json
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)) if _o.path.basename(_o.path.dirname(_o.path.abspath(__file__)))=='signoff' else _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), '..'))
+from common import run_ngspice, fresh, bank_y, LIB, PDK_NG, PEX, ASBUILT, GDS, REPO
 def load(pat):
     D={}
     for fn in sorted(glob.glob(pat)):
@@ -11,7 +13,7 @@ def mk(D):
         y=np.zeros_like(f,complex); tag='A' if net=='cpe_a07' else 'B'
         for i in range(5):
             if c>>i&1:
-                yy=1/D[f"bank{tag}{i}|{key}"]; y=y+np.nan_to_num(yy,nan=0,posinf=0,neginf=0)
+                y=y+bank_y(D[f"bank{tag}{i}|{key}"],f)
         return y
     def run(o):
         o=o.astype(np.int8); d=np.diff(np.concatenate(([0],o,[0]))); st=np.where(d==1)[0]; en=np.where(d==-1)[0]-1

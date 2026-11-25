@@ -1,6 +1,6 @@
 * gate drive ff 125
 .lib /home/claude/pdk/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice ff
-.include /home/claude/foc/lay/pex/top_pex.spice
+.include ../../pex/top_pex.spice
 .temp 125
 .option rshunt=1e12
 Vdd vdd 0 1.62

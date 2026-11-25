@@ -1,7 +1,7 @@
 crashbackups stop
 drc off
 snap internal
-gds read /home/claude/foc/lay/build/tt_um_tjfreeborn1_cpe_a07a05.gds
+gds read [file join [file dirname [file normalize [info script]]] .. .. gds tt_um_tjfreeborn1_cpe_a07a05.gds]
 load tt_um_tjfreeborn1_cpe_a07a05
 select top cell
 expand

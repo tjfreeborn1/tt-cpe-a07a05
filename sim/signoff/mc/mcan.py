@@ -1,3 +1,6 @@
+# SUPERSEDED by mcsim2.py / mcan2.py (2026-11-25, after the independent review): this version reused mismatch
+# seeds across MOS corners, excited both pins at once, did not check ngspice logs and zeroed NaN values.
+# Kept unchanged as the record of what produced the 2026-11-24 results in signoff_B.md.
 import numpy as np, glob, json, sys
 WIN={'cpe_a07':(1.5e5,6e5),'cpe_a05':(5e4,2e5)}
 pins=[(Rs,Ce) for Rs in (35,100,300,500) for Ce in (4e-12,6.5e-12,9e-12)]

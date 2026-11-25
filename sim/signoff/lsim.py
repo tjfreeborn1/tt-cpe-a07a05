@@ -1,7 +1,9 @@
 """Large-signal transient: as-built network + trim bank + pin model, Vdc + Vpk sin. Fundamental Z and current THD."""
 import numpy as np, subprocess, sys, json, os
-P='/home/claude/pdk/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice'
-AB='/home/claude/foc/lay/asbuilt'
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)) if _o.path.basename(_o.path.dirname(_o.path.abspath(__file__)))=='signoff' else _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), '..'))
+from common import run_ngspice, fresh, bank_y, LIB, PDK_NG, PEX, ASBUILT, GDS, REPO
+P=LIB
+AB=ASBUILT
 NET={'cpe_a07':11,'cpe_a05':14}          # trim code at 1.0 V (post-layout, tt, nominal pin)
 FREQ=[200,2e3,2e4,2e5,1e6]
 AMP=[0.01,0.05,0.1,0.2,0.3,0.5]           # Vrms
@@ -20,7 +22,7 @@ for n,fr,a,vdc in jobs:
        '.control','option interp',f'tran {dt:g} {tstop:g} 0 {dt:g}',
        f'wrdata {tag}.dat i(Vs) v(p) v(XB.b0) v(XB.b1) v(XB.b2) v(XB.b3) v(XB.b4)','.endc','.end']
     open(f'{tag}.sp','w').write('\n'.join(b)+'\n')
-    subprocess.run(['ngspice','-b',f'{tag}.sp'],capture_output=True)
+    fresh(f'{tag}.dat'); run_ngspice(f'{tag}.sp')
     d=np.loadtxt(f'{tag}.dat'); t=d[:,0]; i=-d[:,1]; vp=d[:,3]; vb=d[:,5::2]
     m=t>=t[-1]-4*T; tt=t[m]
     def fit(x):

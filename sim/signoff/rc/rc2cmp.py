@@ -1,4 +1,6 @@
 import numpy as np, glob, json
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)) if _o.path.basename(_o.path.dirname(_o.path.abspath(__file__)))=='signoff' else _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), '..'))
+from common import run_ngspice, fresh, bank_y, LIB, PDK_NG, PEX, ASBUILT, GDS, REPO
 def load(p):
     D={}
     for fn in sorted(glob.glob(p)): z=np.load(fn); D.update({k:z[k] for k in z.files})
@@ -11,7 +13,7 @@ def run(o):
     if not len(st): return 0,0,0
     L=lf[en]-lf[st]; j=np.argmax(L); return L[j],f[st[j]],f[en[j]]
 def ev(D,net,a,key):
-    t='A' if net=='cpe_a07' else 'B'; yb=[np.nan_to_num(1/D[f"bank{t}{i}|{key}"],nan=0,posinf=0,neginf=0) for i in range(5)]
+    t='A' if net=='cpe_a07' else 'B'; yb=[bank_y(D[f"bank{t}{i}|{key}"],f) for i in range(5)]
     Y=[1/D[f"{net}|{key}"]+sum(yb[i] for i in range(5) if c>>i&1) for c in range(32)]
     w=(f>=WIN[net][0])&(f<=WIN[net][1]); rng=(f>=20)&(f<=10e6); cl=[];tw=[]
     mcl=np.ones_like(f,bool); mtw=np.ones_like(f,bool)

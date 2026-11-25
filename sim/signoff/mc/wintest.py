@@ -1,3 +1,6 @@
+# SUPERSEDED by mcsim2.py / mcan2.py (2026-11-25, after the independent review): this version reused mismatch
+# seeds across MOS corners, excited both pins at once, did not check ngspice logs and zeroed NaN values.
+# Kept unchanged as the record of what produced the 2026-11-24 results in signoff_B.md.
 import numpy as np, glob, sys
 exec(open('mcan.py').read().split("if __name__")[0])
 MOS=sys.argv[1] if len(sys.argv)>1 else 'tt'

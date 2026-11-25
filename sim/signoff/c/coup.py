@@ -1,10 +1,12 @@
 import numpy as np, subprocess
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)) if _o.path.basename(_o.path.dirname(_o.path.abspath(__file__)))=='signoff' else _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), '..'))
+from common import run_ngspice, fresh, bank_y, LIB, PDK_NG, PEX, ASBUILT, GDS, REPO
 P='/home/claude/pdk/share/pdk/sky130A/libs.tech/ngspice'
 def sim(code,src):
     g=['vdd' if code>>i&1 else 'gnd0' for i in range(5)]
     ac={'sig':('ac 1','ac 0','ac 0','ac 0'),'vdd':('ac 0','ac 0','ac 1','ac 0'),'gate':('ac 0','ac 0','ac 0','ac 1'),'xt':('ac 0','ac 1','ac 0','ac 0')}[src]
     # gate inputs: driven through sources tied to vdd/0 with an AC term
-    b=['* coupling',f'.lib {P}/sky130.lib.spice tt','.include /home/claude/foc/lay/pex/top_pex.spice','.temp 27','.option rshunt=1e12',
+    b=['* coupling',f'.lib {P}/sky130.lib.spice tt',f'.include {PEX}','.temp 27','.option rshunt=1e12',
        f'Vdd vdd 0 dc 1.8 {ac[2]}',f'VA a 0 dc 1.0 {ac[0]}',f'VB b 0 dc 1.0 {ac[1]}']
     pins=[]
     for i in range(5):
@@ -13,7 +15,7 @@ def sim(code,src):
     b+=['X1 a b '+' '.join(f'ga{i}' for i in range(5))+' '+' '.join(f'gb{i}' for i in range(5))+' vdd 0 toppex',
         '.control','set wr_singlescale','option numdgt=7','ac dec 20 10 10meg',
         'wrdata c.dat real(i(VA)) imag(i(VA)) real(i(VB)) imag(i(VB))','.endc','.end']
-    open('c.sp','w').write('\n'.join(b)+'\n'); subprocess.run(['ngspice','-b','c.sp'],capture_output=True)
+    open('c.sp','w').write('\n'.join(b)+'\n'); fresh('c.dat'); run_ngspice('c.sp')
     d=np.loadtxt('c.dat'); return d[:,0], d[:,1]+1j*d[:,2], d[:,3]+1j*d[:,4]
 res={}
 for code in (0,31):

@@ -22,3 +22,7 @@ sim/tb/tbout
 sim/tb/refout
 __pycache__/
 layout_build/
+sim/signoff/mc/out2_*/
+sim/signoff/mc/tmp2/
+sim/signoff/mc/lane2*.log
+__pycache__/

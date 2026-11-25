@@ -1,3 +1,6 @@
+# SUPERSEDED by mcsim2.py / mcan2.py (2026-11-25, after the independent review): this version reused mismatch
+# seeds across MOS corners, excited both pins at once, did not check ngspice logs and zeroed NaN values.
+# Kept unchanged as the record of what produced the 2026-11-24 results in signoff_B.md.
 """Monte Carlo on the extracted netlist: per-device mismatch (PDK mc_mm models, per instance) + Gaussian global
 R (res_high_po__var_mult, used by the xhigh_po base model; sigma 5/3 = corner/3, i.e. 2.7 % on a 98 um segment) and MIM (camimc sigma 3.7 %, cpmimc sigma 0.053 fF/um) shifts.
 MOS process = corner file given by MOS argument. One ngspice run per sample, 6 AC sweeps (code 0, each bit alone)."""

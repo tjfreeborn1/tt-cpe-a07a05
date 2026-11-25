@@ -1,4 +1,6 @@
 import numpy as np, glob
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)) if _o.path.basename(_o.path.dirname(_o.path.abspath(__file__)))=='signoff' else _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), '..'))
+from common import run_ngspice, fresh, bank_y, LIB, PDK_NG, PEX, ASBUILT, GDS, REPO
 def load(p):
     D={}
     for fn in sorted(glob.glob(p)): z=np.load(fn); D.update({k:z[k] for k in z.files})
@@ -12,7 +14,7 @@ def run(o):
 def yb(D,net,key,c,ff):
     y=np.zeros(len(ff),complex); t='A' if net=='cpe_a07' else 'B'
     for i in range(5):
-        if c>>i&1: y+=np.nan_to_num(1/D[f"bank{t}{i}|{key}"],nan=0,posinf=0,neginf=0)
+        if c>>i&1: y+=bank_y(D[f"bank{t}{i}|{key}"],ff)
     return y
 def best(D,ff,net,a,key):
     ss=2j*np.pi*ff; l=np.log10(ff); b=(-1,)
