@@ -61,8 +61,20 @@ You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 
    50 – 200 kHz for α = 0.5) is not recommended. In simulation it picks a code one to three steps off for about 1 % of
    chips, mostly when the pin resistance is high and the pin capacitance small, and that can cut the α = 0.7 band to
    about 2.2 decades.
-5. Sweep 20 Hz – 10 MHz and fit α and Cα in the constant-phase band.
+5. Sweep 20 Hz – 10 MHz and fit α and Cα in the constant-phase band. Leave the other analog pin unconnected or
+   idle while measuring. The on-chip crosstalk between `ua[0]` and `ua[1]` is −54 dB at 10 MHz; package and
+   board coupling will be larger.
 6. Repeat at 0.7 V and 1.5 V bias (recalibrating the code) to measure the Cα tuning.
+
+### Safe operating limits
+
+| Quantity | Limit | Why |
+|---|---|---|
+| Pin voltage, bias + peak signal | ≤ 1.8 V | The MOS capacitors are 1.8 V thin-oxide devices, with the gate on the pin. |
+| Pin voltage, bias − peak signal | ≥ 0.5 V for valid data; never below −0.3 V | MOS capacitor bias; forward-biased junctions and ESD diodes. |
+| Test signal | 100 mVrms recommended; 1 Vrms maximum | At 1 Vrms: 1.2 mA peak at the pin and about 4.5 % distortion. Above 1 MHz the smallest resistor can heat by up to about 20 K. |
+| VDPWR | 1.62 – 1.8 V | The trim switches were checked at 1.62 V: full gate swing and at most 24 Ω on-resistance. |
+| Order | Power the chip and select the project before applying bias; remove the bias first. | The trim-switch gates are undefined while the chip is unpowered. |
 
 ## External hardware
 
