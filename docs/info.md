@@ -31,10 +31,18 @@ The DC bias applied by the impedance analyzer (0.7–1.5 V) changes the MOS-capa
 Post-layout simulated performance (extracted layout, SKY130 models, best trim code per chip, worst of 12 pin-path
 models):
 
-| Pin | Phase within ±2.5°: median / 99 % of chips at least / worst chip | Phase within ±3°: median / worst | Band shared by all 828 corner cases (±2.5°) | Fitted α | Cα at 1.0 V: typical ±1σ (range over all corners) |
-|---|---|---|---|---|---|
-| `ua[0]` α = 0.7 | 4.32 / 4.28 / 3.96 decades | 4.38 / 4.32 decades | 4.12 decades, 126 Hz – 1.68 MHz | 0.713 | 1.66 nF·s^-0.3 ± 1.1 % (1.56 – 1.76) |
-| `ua[1]` α = 0.5 | 2.33 / 2.29 / 1.99 decades | 2.38 / 2.34 decades | 2.12 decades, 1.9 kHz – 251 kHz | 0.500 | 30.1 nF·s^-0.5 ± 2.3 % (26.2 – 32.4) |
+| Metric | `ua[0]`, α = 0.7 | `ua[1]`, α = 0.5 |
+|---|---|---|
+| Band within ±2.5°: median | 4.32 decades | 2.33 decades |
+| Band within ±2.5°: 99 % of chips at least | 4.28 decades | 2.29 decades |
+| Band within ±2.5°: worst chip | 3.96 decades | 1.99 decades |
+| Band within ±3°: median / worst | 4.38 / 4.32 decades | 2.38 / 2.34 decades |
+| Band shared by all 828 corner cases (±2.5°) | 4.12 decades, 126 Hz – 1.68 MHz | 2.12 decades, 1.9 – 251 kHz |
+| Fitted α | 0.713 | 0.500 |
+| Cα at 1.0 V, typical ± 1σ | 1.66 ± 1.1 % | 30.1 ± 2.3 % |
+| Cα range over all corners | 1.56 – 1.76 | 26.2 – 32.4 |
+
+Cα is in nF·s^(α−1), that is nF·s^−0.3 for α = 0.7 and nF·s^−0.5 for α = 0.5.
 
 - **Monte Carlo coverage:** 500 samples, 300 at the typical MOS corner and 50 at each of ss/ff/sf/fs. Each sample has
   per-device mismatch plus global resistor and MIM variation, with 3σ equal to the PDK corners.
@@ -186,13 +194,18 @@ compensation at the header and a segment sweep:
 
 ### Safe operating limits
 
-| Quantity | Limit | Why |
-|---|---|---|
-| Pin voltage, bias + peak signal | ≤ 1.8 V | The MOS capacitors are 1.8 V thin-oxide devices, with the gate on the pin. |
-| Pin voltage, bias − peak signal | ≥ 0.5 V for valid data; never below −0.3 V | MOS capacitor bias; forward-biased junctions and ESD diodes. |
-| Test signal | 100 mVrms recommended. Maximum peak = the smaller of (1.8 V − bias) and (bias − 0.5 V): 0.35 Vrms at 1.0 V bias, 0.21 Vrms at 1.5 V, 0.14 Vrms at 0.7 V. | Larger signals overstress the 1.8 V devices or forward-bias junctions. For example, 1 Vrms at 1.0 V bias puts 2.4 V on the MOS-capacitor gates and gives 12–15 % distortion at 1 kHz. |
-| VDPWR | 1.62 – 1.8 V | The trim switches were checked at 1.62 V. The gates swing fully, and on-resistance runs from about 15 Ω (bit 4) to 243 Ω (bit 0) at tt, 27 °C, or at most 24–400 Ω at ss, 125 °C. |
-| Order | Power the chip and select the project before applying bias; remove the bias first. | The trim-switch gates are undefined while the chip is unpowered. |
+- **Pin voltage, bias + peak signal: at most 1.8 V.** The MOS capacitors are 1.8 V thin-oxide devices with the gate
+  on the pin.
+- **Pin voltage, bias − peak signal: at least 0.5 V for valid data, and never below −0.3 V.** The MOS capacitors need
+  the bias; below −0.3 V, junctions and ESD diodes start to conduct.
+- **Test signal: 100 mVrms recommended.** The maximum peak is the smaller of (1.8 V − bias) and (bias − 0.5 V):
+  0.35 Vrms at 1.0 V bias, 0.21 Vrms at 1.5 V and 0.14 Vrms at 0.7 V. Larger signals overstress the 1.8 V devices or
+  forward-bias junctions. For example, 1 Vrms at 1.0 V bias puts 2.4 V on the MOS-capacitor gates and gives 12–15 %
+  distortion at 1 kHz.
+- **VDPWR: 1.62 – 1.8 V.** The trim switches were checked at 1.62 V. The gates swing fully, and on-resistance runs
+  from about 15 Ω (bit 4) to 243 Ω (bit 0) at tt, 27 °C, or at most 24–400 Ω at ss, 125 °C.
+- **Order: power the chip and select the project before applying bias; remove the bias first.** The trim-switch gates
+  are undefined while the chip is unpowered.
 
 ## External hardware
 
