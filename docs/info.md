@@ -9,77 +9,99 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-This project contains two passive approximations of **fractional-order capacitors** (constant-phase elements, CPEs).
-A capacitor's phase is −90° and a resistor's is 0°. A CPE sits in between, at −90·α degrees, and keeps that phase
-over a wide range of frequencies. CPEs are used to build fractional-order filters, oscillators and controllers, and
-to model electrode, battery and biological-tissue impedance.
+This project contains two passive approximations of fractional-order capacitors, also referred to as constant phase
+elements (CPEs), connected to the analog pins `ua[0]` and `ua[1]`. The impedance of an ideal fractional-order
+capacitor is given by:
 
-- `ua[0]`: α = 0.7 element, target phase −63°.
-- `ua[1]`: α = 0.5 element, target phase −45°.
+$$Z(j\omega) = \frac{1}{(j\omega)^{\alpha} C_{\alpha}} \qquad (1)$$
 
-`ua[0]` and `ua[1]` are the project's analog pins. The physical chip pin each one reaches depends on where the
-project sits on the shuttle; check this project's page on tinytapeout.com for the pin numbers on your chip.
+where ω is the angular frequency in rad/s, α is the order (0 < α < 1), and Cα is the pseudocapacitance with units
+F·s^(α−1)^. The phase of (1) is −90α° at all frequencies, which places the fractional-order capacitor between a
+resistor (α = 0, 0°) and a capacitor (α = 1, −90°), and (1) becomes the familiar capacitor impedance 1/(jωC) when
+α = 1. Fractional-order capacitors are widely used to realize fractional-order filters, oscillators, and
+controllers, and to model the impedance of electrodes, batteries, and biological tissues.
 
-### Terms used
+- `ua[0]`: α = 0.7 element, with a target phase of −63°.
+- `ua[1]`: α = 0.5 element, with a target phase of −45°.
 
-- **α (order):** sets the phase, −90·α degrees. α = 1 is an ordinary capacitor, α = 0 a resistor.
-- **Cα:** the "size" of the element, like capacitance for a capacitor. The ideal impedance is
-  Z = 1 / ((jω)^α^ · Cα), so |Z| = 1 / (ω^α^ · Cα). Its unit, nF·s^(α−1)^, is unusual; in practice, at 10 kHz `ua[0]`
-  measures about 260 kΩ and `ua[1]` about 130 kΩ.
-- **Constant-phase band:** the frequency range over which the measured phase stays within ±2.5° of −90·α degrees.
-  This is the main performance figure. An RC network can only hold the phase over a limited band.
-- **Decades:** the width of that band on a log scale, log10(f_high / f_low). Three decades is a 1000:1 range, for
-  example 1 kHz to 1 MHz.
-- **Trim code:** a 5-bit number (0–31) on the project's input pins that adds a small capacitance to the element.
-  It is chosen once per chip during measurement (test step 6) to make the band as wide as possible.
-- **Pin path:** everything between the on-chip network and the package pin: the Tiny Tapeout analog switch, the
-  on-chip analog bus and the pad. It adds series resistance (35–500 Ω) and capacitance to ground (about 4 pF on chip,
-  4–9 pF including the board). This design treats the pin capacitance as part of the network.
-- **Process corners:** the extremes of manufacturing variation. tt is typical; ss and ff are slow and fast
-  transistors; sf and fs are mixed.
-- **Monte Carlo:** simulating many randomly varied chips. **Mismatch** is the random difference between nominally
-  identical devices on the same chip; **σ** is the standard deviation.
+Note that `ua[0]` and `ua[1]` are the analog pins of this project, and the physical chip pin that each one reaches
+depends on the position of the project on the shuttle (the pin numbers for a specific chip are given on the project
+page at tinytapeout.com).
+
+### Definitions
+
+The following terms are used throughout this datasheet.
+
+- **Order (α):** the exponent in (1), which sets the phase of the element to −90α° (α = 1 for a capacitor and α = 0
+  for a resistor).
+- **Pseudocapacitance (Cα):** the fractional-order counterpart of capacitance in (1), with an impedance magnitude of
+  |Z| = 1/(ω^α^Cα). While its units (nF·s^(α−1)^) are unfamiliar, the values in this work correspond to a measured
+  |Z| of approximately 260 kΩ for `ua[0]` and approximately 130 kΩ for `ua[1]` at 10 kHz.
+- **Constant phase band:** the frequency range over which the measured phase remains within ±2.5° of −90α°. This is
+  the main performance metric of this work, as an RC network can only maintain a constant phase over a limited band.
+- **Decades:** the width of the constant phase band on a logarithmic scale, calculated as $\log_{10}(f_{high}/f_{low})$,
+  so that 3 decades corresponds to a 1000:1 range (e.g. from 1 kHz to 1 MHz).
+- **Trim code:** the 5-bit value (from 0 to 31) applied to the input pins of this project, which adds a small
+  capacitance to each element and is selected once for each chip during measurement (step 6 of the procedure) to
+  maximize the constant phase band.
+- **Pin path:** the connection between the on-chip network and the package pin (the Tiny Tapeout analog switch,
+  on-chip analog bus, and pad). The pin path adds a series resistance from 35 Ω to 500 Ω and a capacitance to ground
+  of approximately 4 pF on chip (from 4 pF to 9 pF including the board), which this design includes as part of the
+  network.
+- **Process corners:** the extremes of manufacturing variation, where tt is typical, ss and ff are slow and fast
+  transistors, and sf and fs are the mixed cases.
+- **Monte Carlo:** simulation of many randomly varied chips, where mismatch is the random difference between nominally
+  identical devices on the same chip and σ is the standard deviation.
 
 ### Design
 
-Each element is a Morrison–Valsa network [1, 2]: a resistor Rp in parallel with several series resistor–capacitor
-branches, with values spaced so that their combined phase ripples only slightly around the target. It is built from
-SKY130 high-resistance polysilicon resistors and MOS plus MIM capacitors, about 200 pF per element.
+Each element is realized as a Morrison–Valsa network [1, 2], which is a resistor (Rp) in parallel with several series
+resistor-capacitor branches whose values are spaced so that their combined phase ripples only slightly around the
+target. The networks are realized using SKY130 high-resistance polysilicon resistors and MOS plus MIM capacitors, with
+a total of approximately 200 pF per element.
 
-Each element also has a **5-bit trim bank**: five binary-weighted capacitors, each switched to ground by an NMOS
-transistor. The drawn steps are 0.3 pF (0–9.3 pF); in the extracted layout extra parasitic capacitance makes them
-about 0.34 pF (0–9.5 pF). The code is set on `ui_in[4:0]` for `ua[0]` and on `uio_in[4:0]` for `ua[1]` (bit 0 =
-least significant). The trim makes up for chip-to-chip differences in the pin capacitance and the process.
+Each element also includes a 5-bit trim bank of binary-weighted capacitors, each switched to ground by an NMOS
+transistor, to compensate for chip-to-chip differences in the pin capacitance and process. The drawn steps are 0.3 pF
+(from 0 pF to 9.3 pF), though the extracted layout yields steps of approximately 0.34 pF (from 0 pF to 9.5 pF) as a
+result of additional parasitic capacitance. The trim code is applied on `ui_in[4:0]` for `ua[0]` and on `uio_in[4:0]`
+for `ua[1]`, with bit 0 as the least significant bit.
 
-The MOS capacitors only work with a DC bias of at least about 0.5 V on the pin, which the impedance analyzer
-supplies. Changing the bias between 0.7 and 1.5 V changes the MOS-capacitor values and so tunes Cα by about 8 %.
+The MOS capacitors require a DC bias of at least approximately 0.5 V on the pin, which is supplied by the impedance
+analyzer. Further, changing this bias from 0.7 V to 1.5 V changes the MOS capacitor values and tunes Cα by
+approximately 8%.
 
-**Simulated performance** (extracted layout, best trim code for each chip, worst case over 12 pin-path models):
+The simulated performance of both elements, using the extracted layout, the best trim code for each chip, and the
+worst case of 12 pin path models, is given in the following table. The band rows for the median chip, 99% of chips,
+and worst chip are from the Monte Carlo analysis, while the band common to every simulated case is from the corner
+analysis (both are described under Verification details). For 99% of chips, the ±2.5° band is at least 4.28 decades
+for `ua[0]` and 2.29 decades for `ua[1]`, with fitted orders within 0.013 of the target for both elements.
 
 | Metric | `ua[0]`, α = 0.7 | `ua[1]`, α = 0.5 |
 |---|---|---|
 | Band within ±2.5°: median chip | 4.32 decades | 2.33 decades |
-| Band within ±2.5°: 99 % of chips at least | 4.28 decades | 2.29 decades |
+| Band within ±2.5°: 99% of chips at least | 4.28 decades | 2.29 decades |
 | Band within ±2.5°: worst chip | 3.96 decades | 1.99 decades |
 | Band within ±3°: median / worst chip | 4.38 / 4.32 decades | 2.38 / 2.34 decades |
-| Band common to every simulated case (±2.5°) | 4.12 decades, 126 Hz – 1.68 MHz | 2.12 decades, 1.9 – 251 kHz |
+| Band common to every simulated case (±2.5°) | 4.12 decades, 126 Hz to 1.68 MHz | 2.12 decades, 1.9 kHz to 251 kHz |
 | Fitted α | 0.713 | 0.500 |
-| Cα at 1.0 V bias, typical ± 1σ | 1.66 nF·s^−0.3^ ± 1.1 % | 30.1 nF·s^−0.5^ ± 2.3 % |
-| Cα, range over all corners | 1.56 – 1.76 nF·s^−0.3^ | 26.2 – 32.4 nF·s^−0.5^ |
-
-Section "Verification details" below explains how these were simulated.
+| Cα at 1.0 V bias, typical ± 1σ | 1.66 nF·s^−0.3^ ± 1.1% | 30.1 nF·s^−0.5^ ± 2.3% |
+| Cα, range over all corners | 1.56 to 1.76 nF·s^−0.3^ | 26.2 to 32.4 nF·s^−0.5^ |
 
 ### Circuit
 
-Each pin connects to its own network: a parallel resistor Rp, and N branches of a resistor Rk in series with a
-capacitor Ck, all from the pin to ground. The trim bank is in parallel with them. N = 5 for α = 0.7 (`ua[0]`) and
-N = 3 for α = 0.5 (`ua[1]`). Trim bit k is set by `ui_in[k]` for `ua[0]` and by `uio_in[k]` for `ua[1]`; a set bit
-closes that switch and adds 0.3 pF × 2^k^.
+The network connected to each pin is given in the following figure. It consists of a parallel resistor (Rp) and N
+branches of a resistor (Rk) in series with a capacitor (Ck), all connected from the pin to ground, with the trim bank
+in parallel (N = 5 for α = 0.7 on `ua[0]` and N = 3 for α = 0.5 on `ua[1]`). Trim bit k is set by `ui_in[k]` for
+`ua[0]` and by `uio_in[k]` for `ua[1]`, where a set bit closes the corresponding switch and adds 0.3 pF × 2^k^ of
+capacitance.
 
-![Network schematic (one per pin)](network.png)
+![Morrison–Valsa network and 5-bit trim bank connected to each analog pin (N = 5 for ua[0] and N = 3 for ua[1], drawn trim capacitances from 0.3 pF to 4.8 pF)](network.png)
 
-**Element values** (as laid out). Each Ck is a number of 10 × 10 µm MOS capacitor units (about 0.76 pF each at 1.0 V
-bias) plus a MIM capacitor in parallel.
+The resistor and capacitor values of each branch, as laid out, are given in the following tables for `ua[0]` and
+`ua[1]`, respectively. Each Ck is realized as a number of 10 µm × 10 µm MOS capacitor units (approximately 0.76 pF
+each at 1.0 V bias) in parallel with a MIM capacitor, and the number of units and the MIM capacitance are given in
+parentheses. For example, C1 of `ua[0]` is 100.2 pF, realized as 108 MOS units in parallel with 18.2 pF of MIM
+capacitance.
 
 | `ua[0]`, α = 0.7 | Rk | Ck (MOS units + MIM) |
 |---|---|---|
@@ -88,64 +110,78 @@ bias) plus a MIM capacitor in parallel.
 | R3, C3 | 331 kΩ | 26.9 pF (29 units + 4.9 pF MIM) |
 | R4, C4 | 85.8 kΩ | 16.5 pF (18 units + 2.9 pF MIM) |
 | R5, C5 | 15.5 kΩ | 12.3 pF (13 units + 2.4 pF MIM) |
-| Rp | 18.0 MΩ | — |
+| Rp | 18.0 MΩ | n/a |
 
 | `ua[1]`, α = 0.5 | Rk | Ck (MOS units + MIM) |
 |---|---|---|
 | R1, C1 | 591 kΩ | 90.5 pF (97 units + 16.9 pF MIM) |
 | R2, C2 | 222 kΩ | 76.8 pF (83 units + 13.8 pF MIM) |
 | R3, C3 | 51.0 kΩ | 31.9 pF (34 units + 6.1 pF MIM) |
-| Rp | 682 kΩ | — |
+| Rp | 682 kΩ | n/a |
 
 - **Devices (SKY130 cells):**
-  - Resistors: `sky130_fd_pr__res_xhigh_po_0p35` (0.35 µm wide), R ≈ 5.71 kΩ/µm × L + 0.62 kΩ per segment.
+  - Resistors: `sky130_fd_pr__res_xhigh_po_0p35` (0.35 µm wide), with R ≈ 5.71 kΩ/µm × L + 0.62 kΩ per segment.
   - MIM capacitors: `sky130_fd_pr__cap_mim_m3_1`.
-  - MOS capacitors: `sky130_fd_pr__nfet_01v8`, gate on the branch node, source, drain and body to ground.
+  - MOS capacitors: `sky130_fd_pr__nfet_01v8`, with the gate on the branch node and the source, drain, and body
+    connected to ground.
   - Trim switches: `sky130_fd_pr__nfet_01v8`.
-- **Trim bank:** binary-weighted MIM capacitors (drawn 0.3, 0.6, 1.2, 2.4, 4.8 pF). The pin capacitance (about
-  4–9 pF) supplies the rest of the capacitance that sets the upper end of the band.
-- **Size:** 2 × 2 tiles, 334.9 × 225.8 µm. The α = 0.5 block is on the left, the α = 0.7 block on the right, and the
-  resistor array and trim switches are in the centre.
+- **Trim bank:** binary-weighted MIM capacitors (drawn as 0.3 pF, 0.6 pF, 1.2 pF, 2.4 pF, and 4.8 pF). The pin
+  capacitance (from 4 pF to 9 pF) supplies the remainder of the capacitance that sets the upper end of the band.
+- **Size:** 2 × 2 tiles (334.9 µm × 225.8 µm), with the α = 0.5 element on the left, the α = 0.7 element on the
+  right, and the resistor array and trim switches in the center.
 
-![Simulated impedance and phase](bode.png)
+The simulated impedance magnitude and phase of both elements from 20 Hz to 10 MHz, using the extracted layout at the
+typical corner with 1.0 V bias and the nominal 100 Ω / 6.5 pF pin model, are given in the following figure for
+`ua[0]` (blue, trim code 11) and `ua[1]` (orange, trim code 14). The phase of each element ripples around its target
+(dashed lines at −63° and −45°) over the constant phase band, approaches 0° at the lowest frequencies where Rp
+dominates, and approaches −90° at the highest frequencies where the pin capacitance dominates. For these conditions,
+`ua[0]` remains within ±2.5° of −63° over 4.34 decades and `ua[1]` remains within ±2.5° of −45° over 2.34 decades,
+which is very close to the Monte Carlo medians of 4.32 decades and 2.33 decades, respectively.
 
-![Layout](layout.png)
+![Simulated impedance magnitude and phase of ua[0] (α = 0.7, trim code 11, blue) and ua[1] (α = 0.5, trim code 14, orange) from the extracted layout at the typical corner with 1.0 V bias and a 100 Ω / 6.5 pF pin model](bode.png)
 
-![Top-level schematic](schematic.png)
+The layout of the project and the top-level Xschem schematic are given in the following two figures, respectively.
+
+![Layout of the 2 × 2 tile project (334.9 µm × 225.8 µm) with the α = 0.5 element (left), α = 0.7 element (right), and resistor array and trim switches (center)](layout.png)
+
+![Top-level Xschem schematic of the project with both elements and their trim banks](schematic.png)
 
 ### Verification details
 
-- **Corner analysis:** 69 combinations of process corner, bias (0.7, 1.0, 1.5 V) and temperature (0–70 °C), each
-  with 12 pin-path models (series resistance 35, 100, 300 or 500 Ω × pin capacitance 4, 6.5 or 9 pF): 828 cases per
-  element. The "band common to every simulated case" row comes from these.
-- **Monte Carlo:** 500 chips, 300 at the typical MOS corner and 50 at each of ss, ff, sf and fs. Each chip has
-  device-to-device mismatch plus chip-wide resistor and MIM variation, with 3σ equal to the PDK corners. Each chip
-  uses its own best trim code and the worst of the 12 pin-path models.
-- **Why a few chips fall short:** the in-band phase ripple peaks at about ±2.2°, close to the ±2.5° limit. In about
-  1 % of chips mismatch pushes one ripple peak past 2.5°, which splits the band (for α = 0.5 near 170 kHz; for
-  α = 0.7 one chip, with the 500 Ω / 4 pF pin). At ±3° no chip does this.
-- **How Cα is fitted:** over each chip's own ±2.5° band, with the nominal 100 Ω / 6.5 pF pin. Its unit follows the
-  fitted α. Forcing α to exactly 0.7 raises Cα by about 16 %.
-- **Wiring resistance:** results with and without it agree to 0.03 decades.
-- Full sign-off records are in the repository's `verification/` folder.
+- **Corner analysis:** a total of 69 combinations of process corner, bias (0.7 V, 1.0 V, and 1.5 V), and temperature
+  (from 0 °C to 70 °C) were simulated, each with 12 pin path models (series resistance of 35 Ω, 100 Ω, 300 Ω, or
+  500 Ω and pin capacitance of 4 pF, 6.5 pF, or 9 pF), for a total of 828 cases per element.
+- **Monte Carlo:** a total of 500 chips were simulated (300 at the typical MOS corner and 50 at each of the ss, ff,
+  sf, and fs corners). Each chip included device-to-device mismatch and chip-wide resistor and MIM variation (with 3σ
+  equal to the PDK corners), and was evaluated using its own best trim code and the worst of the 12 pin path models.
+- **Tail of the band distribution:** the small tail is attributed to the in-band phase ripple, which peaks at
+  approximately ±2.2° (close to the ±2.5° limit). In approximately 1% of chips, mismatch pushes one ripple peak past
+  2.5° and splits the band (near 170 kHz for α = 0.5, and for one α = 0.7 chip with the 500 Ω / 4 pF pin model),
+  while no chip shows this behavior at ±3°.
+- **Extraction of Cα:** Cα was extracted by fitting (1) over the ±2.5° band of each chip with the nominal
+  100 Ω / 6.5 pF pin model, so its units follow the fitted α. For reference, fixing α at exactly 0.7 increases Cα by
+  approximately 16%.
+- **Wiring resistance:** the results with and without wiring resistance agree to within 0.03 decades.
+- The complete sign-off records are provided in the `verification/` folder of the repository.
 
 ### Known limitations
 
-- **DC bias is required.** The MOS capacitors need at least about 0.5 V on the pin. Without bias neither element is
-  a constant-phase element.
-- **The design counts on the pin capacitance.** The on-chip bus and pad capacitance plus a few pF outside are part of
-  the network. Compensating them away, or adding more than about 6 pF, moves the best trim code past the end of its
-  range.
-- **The ±2.5° margin is thin.** The in-band ripple is about ±2.2°, so about 1 % of chips lose part of the band at
-  ±2.5° (worst simulated: 3.96 and 1.99 decades). None do at ±3°.
-- **The trim can't fix one resistor being off relative to the others.** It corrects errors that shift all parts the
-  same way: all resistors ±25 %, all MOS capacitors ±20 % and all MIM capacitors ±15 % still pass. The α = 0.5
-  network is the more sensitive one: its branch-2 resistor must be within about ±5–10 % of the others. All the
-  resistors are the same device type, so only a model error that depends on resistor length could do this; ordinary
-  mismatch is about 1 % σ.
-- **The analyzer, not the chip, limits the bottom of α = 0.7.** Below about 1 kHz the element is 1–6 MΩ, where the
-  E4990A's guaranteed phase accuracy is ±1–5°, depending on signal level. The low band edge (about 100–130 Hz) can
-  only be verified to that accuracy.
+- **DC bias is required.** The MOS capacitors require at least approximately 0.5 V on the pin, and without this bias
+  neither element behaves as a constant phase element.
+- **The design includes the pin capacitance.** The on-chip bus and pad capacitance, plus a few pF of external
+  capacitance, are part of the network. Therefore, compensating this capacitance away, or adding more than
+  approximately 6 pF, moves the best trim code past the end of its range.
+- **The ±2.5° margin is small.** The in-band ripple is approximately ±2.2°, so approximately 1% of chips lose part of
+  the band at ±2.5° (with worst simulated bands of 3.96 decades and 1.99 decades for `ua[0]` and `ua[1]`,
+  respectively), though none do at ±3°.
+- **The trim cannot correct a single resistor that is off relative to the others.** It does correct errors that shift
+  all components in the same direction (all resistors by ±25%, all MOS capacitors by ±20%, and all MIM capacitors by
+  ±15% still pass). The α = 0.5 network is the more sensitive of the two, as its branch-2 resistor must remain within
+  approximately ±5% to ±10% of the others. Note that all resistors are the same device type, so this error is only
+  expected from a model error that depends on resistor length, as ordinary mismatch is approximately 1% (σ).
+- **The analyzer, not the chip, limits the low-frequency end of the α = 0.7 band.** Below approximately 1 kHz the
+  element is from 1 MΩ to 6 MΩ, where the guaranteed phase accuracy of the E4990A is from ±1° to ±5° (depending on
+  signal level), so the low band edge (from approximately 100 Hz to 130 Hz) can only be verified to that accuracy.
 
 ### References
 
@@ -158,140 +194,160 @@ bias) plus a MIM capacitor in parallel.
 
 ### Quick start
 
-1. Use an impedance analyzer with DC bias and four-terminal-pair leads, compensated at the carrier with the chip out.
-2. Keep the analog pins off the demoboard's 10 MΩ pull-downs.
-3. Power the board, select this project, set all of `ui_in[4:0]` and `uio_in[4:0]` low.
-4. Set the test signal to 100 mVrms (300 mVrms below 10 kHz), then apply 1.0 V DC bias.
-5. Sweep 20 Hz – 10 MHz for each trim code 0–31 and save one file per code.
-6. Run `test/analyze_e4990.py` to pick the best code and report the band, α and Cα.
+The following summary is provided for reference, with the details of each step given in the procedure below.
 
-The details follow.
+1. Use an impedance analyzer with DC bias and four-terminal-pair leads, compensated at the carrier with the chip
+   removed.
+2. Keep the analog pins disconnected from the 10 MΩ pull-downs of the demoboard.
+3. Power the board, select this project, and set all of `ui_in[4:0]` and `uio_in[4:0]` low.
+4. Set the test signal to 100 mVrms (300 mVrms below 10 kHz), then apply 1.0 V DC bias.
+5. Sweep from 20 Hz to 10 MHz for each trim code from 0 to 31, saving one file per code.
+6. Run `test/analyze_e4990.py` to select the best code and report the band, α, and Cα.
 
 ### Measurement terms
 
-- **Four-terminal pair (Hc, Hp, Lp, Lc):** the analyzer's four coaxial connections, high current, high potential,
-  low potential and low current. Current is forced on one pair and voltage sensed on the other, so lead resistance
-  drops out.
-- **Compensation (open / short / load):** the analyzer measures the fixture with nothing connected (open), with a
-  short (short) and, optionally, with a known part (load), and removes the fixture's own effect from later readings.
-- **DC bias:** a DC voltage the analyzer adds underneath its AC test signal.
-- **Segment sweep:** one frequency sweep split into ranges with different settings, here a larger test signal at
-  low frequencies.
-- **Carrier, demoboard, interposer:** the carrier is the small board that holds the Tiny Tapeout chip; the demoboard
-  is the TT ETR demoboard it plugs into; an interposer is a small adapter board fitted between the two.
+- **Four-terminal pair (Hc, Hp, Lp, Lc):** the four coaxial connections of the analyzer (high current, high
+  potential, low potential, and low current). Current is applied on one pair and voltage is sensed on the other, so
+  the lead resistance does not contribute to the measurement.
+- **Compensation (open/short/load):** measurements of the fixture with nothing connected (open), with a short
+  (short), and optionally with a known component (load), which the analyzer uses to remove the contribution of the
+  fixture from later measurements.
+- **DC bias:** a DC voltage that the analyzer adds to its AC test signal.
+- **Segment sweep:** a single frequency sweep divided into ranges with different settings (in this work, a larger
+  test signal at low frequencies).
+- **Carrier, demoboard, and interposer:** the carrier is the small board that holds the Tiny Tapeout chip, the
+  demoboard is the TT ETR demoboard that the carrier plugs into, and an interposer is a small adapter board placed
+  between the two.
 
 ### Equipment and connection
 
-You need an impedance analyzer with DC bias. This procedure was written for a Keysight E4990A (20 Hz – 10 MHz; DC
-bias is part of its standard specification). Bring its Hc/Hp/Lp/Lc to the carrier with either:
+An impedance analyzer with DC bias is required. This procedure was developed for a Keysight E4990A precision
+impedance analyzer (from 20 Hz to 10 MHz, with DC bias as part of its standard specification). The Hc, Hp, Lp, and Lc
+terminals of the analyzer are brought to the carrier using either:
 
-- Keysight four-terminal-pair test leads (16048A, 1 m, DC–30 MHz), with the cable-length setting at 1 m and
+- Keysight four-terminal-pair test leads (16048A, 1 m, from DC to 30 MHz), with the cable-length setting at 1 m and
   open/short compensation; or
-- four identical short BNC cables (same type and length, ideally under about 30 cm), with the adapter/cable setting at
-  none (0 m) and **open/short/load** compensation. The load step corrects the phase error that uncharacterized cables
-  add. Use a known RC part as the load, measured once directly on the analyzer's front panel.
+- four identical short BNC cables (same type and length, ideally under approximately 30 cm), with the adapter/cable
+  setting at none (0 m) and **open/short/load** compensation. The load step corrects the phase error added by the
+  uncharacterized cables, using a known RC component as the load that has been measured once directly on the front
+  panel of the analyzer.
 
-In both cases, join the four shields at the far end. Join Hc and Hp at the `ua` pin and Lc and Lp at the adjacent GND
-pin.
+In both cases, the four shields are joined at the far end, Hc and Hp are joined at the `ua` pin, and Lc and Lp are
+joined at the adjacent GND pin.
 
-A short adapter, or an interposer between the carrier and the demoboard, works best. It routes `ua[0]` and `ua[1]`
-straight to the BNCs and does not pass them down to the demoboard. Kelvin/alligator clip leads (16089 series) are
-specified only to 100 kHz. They cannot cover the top of the band, or the trim calibration that depends on it, so use
-them only for a rough low-frequency check.
+A short adapter, or an interposer between the carrier and the demoboard, is recommended because it routes `ua[0]` and
+`ua[1]` directly to the BNC connectors without passing them to the demoboard. Kelvin/alligator clip leads (16089
+series) are only specified to 100 kHz, so they cannot cover the top of the band (or the trim calibration that depends
+on it) and are only suitable for a rough low-frequency check.
 
-**Without an E4990A:** any impedance analyzer or LCR meter with DC bias and four-terminal leads works if it covers
-about 50 Hz – 3 MHz for `ua[0]` and 1 – 300 kHz for `ua[1]` with good phase accuracy at 100 kΩ – 10 MΩ. A function
-generator (with its DC offset as the bias) driving the pin through a series resistor, read with a two-channel
-oscilloscope, gives only a rough check: it works best on `ua[1]` in the mid band, and the probe's input resistance
-and capacitance must be corrected for, because they are comparable to the element's impedance. Keep the generator
-within the safe operating limits below.
+Other impedance analyzers or LCR meters with DC bias and four-terminal leads can be used if they cover approximately
+50 Hz to 3 MHz for `ua[0]` and 1 kHz to 300 kHz for `ua[1]`, with good phase accuracy from 100 kΩ to 10 MΩ. A
+function generator (with its DC offset providing the bias) driving the pin through a series resistor, read with a
+two-channel oscilloscope, can provide a rough check, though it is best suited to `ua[1]` in the mid band, and the
+input resistance and capacitance of the probe must be corrected for since they are comparable to the impedance of
+the element. The generator output must remain within the safe operating limits given below.
 
 ### Procedure
 
 1. **Prepare the board.** The TT ETR demoboard v3 has a 10 MΩ pull-down resistor from every analog pin to ground.
    Remove the resistor for the two pins used (see the demoboard schematic), or measure the carrier without the
-   demoboard. Left in place it sits in parallel with the α = 0.7 element (whose own Rp is 18 MΩ) and erases the
-   bottom decade of its band.
-2. **Compensate as close to the chip as possible, without the chip.** Do open/short compensation (open/short/load if
-   you are using short BNC cables) at the demoboard analog header with the ASIC carrier removed, or at the carrier
-   pins.
-   - **Do not** take the "open" with the chip in place and the project deselected. That subtracts the on-chip bus
-     and pad capacitance (about 4 pF), which the design counts as part of the network, and the bands collapse
-     (α = 0.5 to about 1–1.8 decades).
-   - Uncompensated external capacitance (carrier trace, leads) should stay at or below about 5 pF. The trim can
-     absorb about 6 pF; beyond that the best code goes to 0 and the band collapses.
-3. **Validate the setup.** Measure a known part (for example 1 MΩ ∥ 10 pF) through the same connection and compare it
-   with a direct front-panel measurement. The phase should agree within about 0.2° up to 2 MHz.
+   demoboard. If left in place, this resistor is in parallel with the α = 0.7 element (which has an Rp of 18 MΩ) and
+   removes the bottom decade of its band.
+2. **Compensate as close to the chip as possible, without the chip.** Perform open/short compensation (open/short/load
+   when short BNC cables are used) at the analog header of the demoboard with the ASIC carrier removed, or at the
+   carrier pins.
+   - **Do not** take the open measurement with the chip in place and the project deselected. This subtracts the
+     on-chip bus and pad capacitance (approximately 4 pF), which the design includes as part of the network, and
+     reduces the bands (for example, α = 0.5 decreases to between 1 and 1.8 decades).
+   - Keep the uncompensated external capacitance (carrier trace and leads) at or below approximately 5 pF. The trim
+     can absorb approximately 6 pF, and beyond this the best code reaches 0 and the band collapses.
+3. **Validate the setup.** Measure a known component (e.g. 1 MΩ ∥ 10 pF) through the same connection and compare it
+   to a direct front-panel measurement. The phase is expected to agree within approximately 0.2° up to 2 MHz.
 4. **Power the board and select this project.** Set all of `ui_in[4:0]` and `uio_in[4:0]` low (code 0).
-5. **Set the test signal, then the bias.** Use a segment sweep: 300 mVrms below 10 kHz and 100 mVrms above (the
-   E4990A's default of 500 mVrms is too large). Then apply 1.0 V DC bias. Apply the bias only after the chip is
-   powered and the project selected. The bias and signal rules are under "Safe operating limits" below.
-   - Why 300 mVrms at low frequency: below about 1 kHz the α = 0.7 element is 1–6 MΩ, where the E4990A's guaranteed
-     phase accuracy at 100 mVrms is only ±0.9° (1 kHz) to ±4–5° (100 Hz). At 300 mVrms it is ±1.5° at 126 Hz. In
-     simulation the larger signal moves the phase by only 0.04°.
-   - Before sweeping all codes, compare the code-0 readings with the checkpoint table below.
-6. **Find the best trim code.** Measure the phase from 20 Hz to 10 MHz for each code 0–31 and keep the code with the
-   widest continuous band within ±2.5° of −90·α degrees. This takes 32 sweeps, about 15–30 minutes per pin.
-   - Export each sweep as `code00.csv` … `code31.csv` in one folder, with columns frequency (Hz), |Z| (Ω) and phase
-     (degrees); the E4990A's |Z|–θ trace export works as is. Then run
-     `python3 test/analyze_e4990.py <folder> --alpha 0.7` (or `--alpha 0.5`). It picks the code, reports the ±2.5°
-     and ±3° bands and fits α and Cα. `test/example_data/` has sample input.
-   - The ±2.5° limit is a cliff. The simulated in-band ripple is about ±2.2°, so being one code off costs 0.3–0.4
-     decades, and analyzer phase accuracy and compensation residue matter. Report the ±3° band as well.
-   - Sanity check: the best code should lie between 1 and 30. Code 0 means too much uncompensated external
-     capacitance. Code 31 means less than designed for, for example when the bus capacitance was compensated away.
-   - Picking the flattest phase over only the top of the band (150 – 600 kHz for α = 0.7, 50 – 200 kHz for α = 0.5)
-     is quicker but not recommended. In simulation it picks a code one to three steps off for about 1 % of chips,
-     which can cut the α = 0.7 band to about 2.2 decades.
-7. **Measure one pin at a time.** Leave the other analog pin unconnected while measuring. The on-chip crosstalk
-   between `ua[0]` and `ua[1]` is −54 dB at 10 MHz; package and board coupling will be larger.
-8. **Measure the Cα tuning.** Repeat at 0.7 V and 1.5 V bias, finding the best code again each time.
+5. **Set the test signal, then the bias.** Use a segment sweep with 300 mVrms below 10 kHz and 100 mVrms above (the
+   default of 500 mVrms on the E4990A is too large). Then apply 1.0 V DC bias, only after the chip is powered and the
+   project is selected. The bias and signal limits are given under Safe operating limits below.
+   - The 300 mVrms signal is used at low frequencies because below approximately 1 kHz the α = 0.7 element is from
+     1 MΩ to 6 MΩ, where the guaranteed phase accuracy of the E4990A at 100 mVrms is only ±0.9° (at 1 kHz) to ±4° to
+     ±5° (at 100 Hz). At 300 mVrms it is ±1.5° at 126 Hz, while in simulation the larger signal changes the phase by
+     only 0.04°.
+   - Before sweeping all codes, compare the code 0 measurements to the checkpoint table below.
+6. **Determine the best trim code.** Measure the phase from 20 Hz to 10 MHz for each code from 0 to 31 and select the
+   code with the widest continuous band within ±2.5° of −90α°. This requires 32 sweeps (approximately 15 min to
+   30 min per pin).
+   - Export each sweep as `code00.csv` to `code31.csv` in one folder, with columns of frequency (Hz), |Z| (Ω), and
+     phase (degrees), which matches the |Z|-θ trace export of the E4990A. Then run
+     `python3 test/analyze_e4990.py <folder> --alpha 0.7` (or `--alpha 0.5`), which selects the code, reports the
+     ±2.5° and ±3° bands, and fits α and Cα. Sample input is provided in `test/example_data/`.
+   - It is important to note that the ±2.5° limit acts as a sharp threshold, as the simulated in-band ripple is
+     approximately ±2.2° and selecting a code one step away from the best code reduces the band by 0.3 to 0.4
+     decades. Therefore, the phase accuracy of the analyzer and any compensation residue are important, and the ±3°
+     band should also be reported.
+   - The best code is expected to be from 1 to 30. A best code of 0 indicates too much uncompensated external
+     capacitance, while a best code of 31 indicates less capacitance than designed for (for example, when the bus
+     capacitance was compensated away).
+   - Selecting the flattest phase over only the top of the band (from 150 kHz to 600 kHz for α = 0.7 and from 50 kHz
+     to 200 kHz for α = 0.5) is quicker but is not recommended. In simulation this selects a code one to three steps
+     away from the best code for approximately 1% of chips, which can reduce the α = 0.7 band to approximately 2.2
+     decades.
+7. **Measure one pin at a time.** Leave the other analog pin unconnected during the measurement. The on-chip crosstalk
+   between `ua[0]` and `ua[1]` is −54 dB at 10 MHz, and the package and board coupling is expected to be larger.
+8. **Measure the tuning of Cα.** Repeat the measurement at 0.7 V and 1.5 V bias, determining the best code again at
+   each bias.
 
-**Checkpoint at code 0 (1.0 V bias), before sweeping all codes.** Expect these readings within a few percent. The
-phase near 1 MHz is not yet flat at code 0; the trim fixes that.
+The expected measurements at code 0 with 1.0 V bias are given in the following table, and the measured values are
+expected to agree with these within a few percent before all codes are swept. Note that the phase near 1 MHz is not
+yet flat at code 0, which is corrected by the trim.
 
 | Pin | 100 Hz | 1 kHz | 100 kHz | 1 MHz |
 |---|---|---|---|---|
 | `ua[0]` (α = 0.7) | 6.9 MΩ ∠−60° | 1.24 MΩ ∠−63° | 50 kΩ ∠−59° | 12 kΩ ∠−48° |
 | `ua[1]` (α = 0.5) | 680 kΩ ∠−5° | 477 kΩ ∠−36° | 45 kΩ ∠−36° | 25 kΩ ∠−48° |
 
-**Fault signatures:**
-- `ua[0]` reads about 4.7 MΩ ∠−37° at 100 Hz: a pull-down or other leakage path is still connected.
-- The phase is flat nowhere: there is no DC bias.
-- The phase sits near −45° where −63° was expected (or the reverse): you are measuring the other pin.
-- Changing the trim code makes little or no difference at the top of the band: you are setting the other pin's trim
-  inputs. `ui_in` trims `ua[0]`; `uio_in` trims `ua[1]`.
-- The best code is 0: too much uncompensated external capacitance. The best code is 31: the on-chip bus capacitance
-  was compensated away (open taken with the project deselected).
+The following measurement signatures indicate common faults:
 
-**Expected measurement result.** We simulated this whole procedure end to end. Fake analyzer data was generated for
-100 simulated chips, at both typical and worst-case (guaranteed-limit) E4990A accuracy, including the TT analog
-switch, bus and board, compensation at the header and the segment sweep. The analysis script then chose the code
-and measured the band:
-- α = 0.7: median 4.29–4.33 decades, 95 % of chips above 3.87–3.97.
-- α = 0.5: median 2.34 decades, 95 % above 2.31.
-- The chosen code was the chip's true best code in 86–98 % of cases, and always within one code of it.
+- `ua[0]` measures approximately 4.7 MΩ ∠−37° at 100 Hz: a pull-down or other leakage path is still connected.
+- The phase is not flat at any frequency: no DC bias is applied.
+- The phase is near −45° where −63° was expected (or the reverse): the other pin is being measured.
+- Changing the trim code has little or no effect at the top of the band: the trim inputs of the other pin are being
+  set (`ui_in` trims `ua[0]` and `uio_in` trims `ua[1]`).
+- The best code is 0: too much uncompensated external capacitance. The best code is 31: the on-chip bus capacitance
+  was compensated away (open measurement taken with the project deselected).
+
+To evaluate if this procedure selects the correct trim code, the complete procedure was simulated using synthetic
+E4990A data for 100 Monte Carlo chips at both typical and guaranteed-limit analyzer accuracy. These simulations
+included the TT analog switch, bus, and board, compensation at the header, and the segment sweep, with the analysis
+script selecting the code and measuring the band. The results were:
+
+- α = 0.7: a median band from 4.29 decades to 4.33 decades, with 95% of chips above 3.87 decades to 3.97 decades.
+- α = 0.5: a median band of 2.34 decades, with 95% of chips above 2.31 decades.
+- The selected code was the best code of the chip in 86% to 98% of cases, and within one code of it in all cases.
+
+This supports that the procedure selects the best or adjacent trim code for every simulated chip, with expected
+measured bands very close to the simulated medians.
 
 ### Safe operating limits
 
 - **Pin voltage, bias + peak signal: at most 1.8 V.** The MOS capacitors are 1.8 V thin-oxide devices with the gate
   on the pin side.
-- **Pin voltage, bias − peak signal: at least 0.5 V for valid data, and never below −0.3 V.** The MOS capacitors need
-  the bias; below −0.3 V, junctions and ESD diodes start to conduct.
+- **Pin voltage, bias − peak signal: at least 0.5 V for valid data, and never below −0.3 V.** The MOS capacitors
+  require the bias, and below −0.3 V the junctions and ESD diodes begin to conduct.
 - **Test signal: 100 mVrms recommended (300 mVrms below 10 kHz).** The maximum peak is the smaller of (1.8 V − bias)
-  and (bias − 0.5 V): 0.35 Vrms at 1.0 V bias, 0.21 Vrms at 1.5 V and 0.14 Vrms at 0.7 V. Larger signals overstress
-  the 1.8 V devices or forward-bias junctions. For example, 1 Vrms at 1.0 V bias puts 2.4 V on the MOS-capacitor
-  gates and gives 12–15 % distortion at 1 kHz. At 1.0 V bias and 100 mVrms the simulated distortion is 0.3–0.4 %
-  and the impedance is within 0.1 % of its small-signal value.
-- **DC bias: 0.7 – 1.5 V, 1.0 V nominal.**
-- **VDPWR: 1.62 – 1.8 V.** The trim switches were checked at 1.62 V. The gates swing fully, and on-resistance runs
-  from about 15 Ω (bit 4) to 243 Ω (bit 0) at tt, 27 °C, or at most 24–400 Ω at ss, 125 °C.
-- **Order: power the chip and select the project before applying bias; remove the bias first.** The trim-switch gates
-  are undefined while the chip is unpowered.
+  and (bias − 0.5 V), which is 0.35 Vrms at 1.0 V bias, 0.21 Vrms at 1.5 V, and 0.14 Vrms at 0.7 V. Larger signals
+  overstress the 1.8 V devices or forward-bias junctions. For example, 1 Vrms at 1.0 V bias applies 2.4 V to the MOS
+  capacitor gates and yields from 12% to 15% distortion at 1 kHz. For comparison, at 1.0 V bias and 100 mVrms the
+  simulated distortion is from 0.3% to 0.4%, and the impedance is within 0.1% of its small-signal value.
+- **DC bias: from 0.7 V to 1.5 V, with 1.0 V nominal.**
+- **VDPWR: from 1.62 V to 1.8 V.** The trim switches were evaluated at 1.62 V, where the gates swing fully and the
+  on-resistance is from approximately 15 Ω (bit 4) to 243 Ω (bit 0) at tt and 27 °C, and at most from 24 Ω to 400 Ω
+  at ss and 125 °C.
+- **Order: power the chip and select the project before applying bias, and remove the bias first.** The trim switch
+  gates are undefined while the chip is unpowered.
 
 ## External hardware
 
-An impedance analyzer with DC bias, such as the Keysight E4990A, 20 Hz – 10 MHz. Connect it with either Keysight
-four-terminal-pair test leads or four matched short BNC cables (the latter with open/short/load compensation), via a
-short adapter or interposer at the carrier that keeps the analog pins off the demoboard pull-downs. Do not use Kelvin
-or alligator clip leads, which are specified only to 100 kHz.
+An impedance analyzer with DC bias is required, such as the Keysight E4990A precision impedance analyzer (from 20 Hz
+to 10 MHz). The analyzer is connected using either Keysight four-terminal-pair test leads or four matched short BNC
+cables (the latter with open/short/load compensation), through a short adapter or interposer at the carrier that
+keeps the analog pins disconnected from the demoboard pull-downs. Kelvin or alligator clip leads are not recommended,
+as they are only specified to 100 kHz.
