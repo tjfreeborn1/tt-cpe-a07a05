@@ -47,9 +47,53 @@ models):
   units follow the fitted α. Forcing α to exactly 0.7 raises Cα by about 16 %.
 - **Wiring resistance:** results with and without it agree to 0.03 decades.
 
+**Element values** (as laid out; MOS capacitor value at 1.0 V bias, about 0.76 pF per 10 × 10 µm unit). Each branch
+is a resistor in series with a capacitor, from the pin to ground. Rp runs from the pin to ground on its own.
+
+| `ua[0]`, α = 0.7 | R | C (MOS units + MIM) |
+|---|---|---|
+| Branch 1 | 3.94 MΩ | 100.2 pF (108 + 18.2 pF) |
+| Branch 2 | 1.25 MΩ | 42.4 pF (46 + 7.5 pF) |
+| Branch 3 | 331 kΩ | 26.9 pF (29 + 4.9 pF) |
+| Branch 4 | 85.8 kΩ | 16.5 pF (18 + 2.9 pF) |
+| Branch 5 | 15.5 kΩ | 12.3 pF (13 + 2.4 pF) |
+| Rp | 18.0 MΩ | — |
+
+| `ua[1]`, α = 0.5 | R | C (MOS units + MIM) |
+|---|---|---|
+| Branch 1 | 591 kΩ | 90.5 pF (97 + 16.9 pF) |
+| Branch 2 | 222 kΩ | 76.8 pF (83 + 13.8 pF) |
+| Branch 3 | 51.0 kΩ | 31.9 pF (34 + 6.1 pF) |
+| Rp | 682 kΩ | — |
+
+- **Trim bank:** binary-weighted MIM capacitors from the pin, each switched to ground by an NMOS transistor, with
+  the external pin capacitance (about 4–9 pF) completing the top-end shunt capacitance.
+- **Resistors:** xhigh-poly, 0.35 µm wide, R ≈ 5.71 kΩ/µm × L + 0.62 kΩ per segment.
+- **Size:** 2 × 2 tiles, 334.9 × 225.8 µm. The α = 0.5 block is on the left, the α = 0.7 block on the right, and the
+  resistor array and trim switches are in the centre.
+
+![Simulated impedance and phase](bode.png)
+
 ![Layout](layout.png)
 
 ![Top-level schematic](schematic.png)
+
+### Known limitations
+
+- **DC bias is required.** The MOS capacitors need at least about 0.5 V on the pin. Unbiased, neither element is a
+  constant-phase element.
+- **The design counts on the pin capacitance.** The on-chip bus and pad capacitance plus a few pF outside are part of
+  the top-end shunt capacitance. Compensating them away, or adding more than about 6 pF, moves the best trim code off
+  the end of its range.
+- **The ±2.5° margin is thin.** The in-band ripple is about ±2.2°, so about 1 % of chips lose part of the band at
+  ±2.5° (worst simulated: 3.96 and 1.99 decades). None do at ±3°.
+- **Ladder-ratio sensitivity.** The trim corrects common-mode process shifts: all resistors ±25 %, MOS ±20 %, MIM ±15 %
+  pass. It cannot correct an error in a single branch's ratio. α = 0.5 is the more fragile network: its branch-2
+  resistor alone must stay within about ±5–10 %. All resistors are the same device type, so this needs a
+  length-dependent model error rather than ordinary mismatch (about 1 % σ).
+- **The analyzer, not the chip, limits the bottom of α = 0.7.** Below about 1 kHz the element is 1–6 MΩ, where the
+  E4990A's guaranteed phase accuracy is ±1–5°, depending on signal level. The low band edge (about 100–130 Hz) can
+  only be verified to that accuracy.
 
 ## How to test
 
@@ -79,8 +123,9 @@ same connection and compare it with a direct front-panel measurement. The phase 
 1. **Prepare the board.** The TT ETR demoboard v3 has a 10 MΩ pull-down to ground on every analog pin. Lift it on
    the two pins used, or measure the carrier without the demoboard. Left in place it sits in parallel with the
    α = 0.7 element (whose own parallel resistor is 18 MΩ) and erases the bottom decade of its band.
-2. **Compensate as close to the chip as possible, without the chip.** Do open/short compensation at the demoboard
-   analog header with the ASIC carrier removed, or at the carrier pins.
+2. **Compensate as close to the chip as possible, without the chip.** Do open/short compensation (open/short/load if
+   you are using short BNC cables) at the demoboard analog header with the ASIC carrier removed, or at the carrier
+   pins.
    - **Do not** take the "open" with the project deselected. That subtracts the on-chip bus and pad capacitance
      (about 4 pF), which the design counts as part of its top-end capacitance, and the bands collapse (α = 0.5 to
      about 1–1.8 decades).
@@ -101,7 +146,8 @@ same connection and compare it with a direct front-panel measurement. The phase 
      less than 0.1 % compared with a 10 mVrms signal.
    - Before sweeping all codes, compare the code-0 readings with the checkpoint table below.
 5. Calibrate the trim code: measure the phase from 20 Hz to 10 MHz for each code 0–31 and keep the code with the
-   widest continuous band within ±2.5° of −90α°. This takes 32 sweeps, about 10 minutes per pin.
+   widest continuous band within ±2.5° of −90α°. This takes 32 sweeps, about 15–30 minutes per pin with the segment sweep
+   from 20 Hz.
    `test/analyze_e4990.py` does this from the 32 exported files and fits α and Cα.
    - The ±2.5° figure is a cliff. The simulated in-band phase ripple is about ±2.2°, so being one code off costs
      0.3–0.4 decades. Analyzer phase accuracy and fixture-compensation residue therefore matter.
