@@ -9,7 +9,7 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-This project contains two passive **fractional-order capacitors** (constant-phase elements, CPEs). An ideal CPE has
+This project contains two passive approximations of **fractional-order capacitors** (constant-phase elements, CPEs). An ideal CPE has
 impedance Z = 1 / ((jω)^α · Cα): its phase stays at −90·α degrees at every frequency, between a resistor (α = 0)
 and a capacitor (α = 1).
 
@@ -55,27 +55,34 @@ Cα is in nF·s^(α−1), that is nF·s^−0.3 for α = 0.7 and nF·s^−0.5 for
   units follow the fitted α. Forcing α to exactly 0.7 raises Cα by about 16 %.
 - **Wiring resistance:** results with and without it agree to 0.03 decades.
 
-**Element values** (as laid out; MOS capacitor value at 1.0 V bias, about 0.76 pF per 10 × 10 µm unit). Each branch
-is a resistor in series with a capacitor, from the pin to ground. Rp runs from the pin to ground on its own.
+**Circuit.** Each pin connects to its own network: a parallel resistor Rp, and N branches of a resistor Rk in series
+with a capacitor Ck, all from the pin to ground. The trim bank is in parallel with them. N = 5 for α = 0.7 (`ua[0]`)
+and N = 3 for α = 0.5 (`ua[1]`). Trim bit k is set by `ui_in[k]` for `ua[0]` and by `uio_in[k]` for `ua[1]`; a set
+bit closes that switch and adds 0.3 pF × 2^k.
 
-| `ua[0]`, α = 0.7 | R | C (MOS units + MIM) |
+![Network schematic (one per pin)](network.png)
+
+**Element values** (as laid out). Each Ck is a number of 10 × 10 µm MOS capacitor units (about 0.76 pF each at 1.0 V
+bias) plus a MIM capacitor in parallel.
+
+| `ua[0]`, α = 0.7 | Rk | Ck (MOS units + MIM) |
 |---|---|---|
-| Branch 1 | 3.94 MΩ | 100.2 pF (108 + 18.2 pF) |
-| Branch 2 | 1.25 MΩ | 42.4 pF (46 + 7.5 pF) |
-| Branch 3 | 331 kΩ | 26.9 pF (29 + 4.9 pF) |
-| Branch 4 | 85.8 kΩ | 16.5 pF (18 + 2.9 pF) |
-| Branch 5 | 15.5 kΩ | 12.3 pF (13 + 2.4 pF) |
+| R1, C1 | 3.94 MΩ | 100.2 pF (108 units + 18.2 pF MIM) |
+| R2, C2 | 1.25 MΩ | 42.4 pF (46 units + 7.5 pF MIM) |
+| R3, C3 | 331 kΩ | 26.9 pF (29 units + 4.9 pF MIM) |
+| R4, C4 | 85.8 kΩ | 16.5 pF (18 units + 2.9 pF MIM) |
+| R5, C5 | 15.5 kΩ | 12.3 pF (13 units + 2.4 pF MIM) |
 | Rp | 18.0 MΩ | — |
 
-| `ua[1]`, α = 0.5 | R | C (MOS units + MIM) |
+| `ua[1]`, α = 0.5 | Rk | Ck (MOS units + MIM) |
 |---|---|---|
-| Branch 1 | 591 kΩ | 90.5 pF (97 + 16.9 pF) |
-| Branch 2 | 222 kΩ | 76.8 pF (83 + 13.8 pF) |
-| Branch 3 | 51.0 kΩ | 31.9 pF (34 + 6.1 pF) |
+| R1, C1 | 591 kΩ | 90.5 pF (97 units + 16.9 pF MIM) |
+| R2, C2 | 222 kΩ | 76.8 pF (83 units + 13.8 pF MIM) |
+| R3, C3 | 51.0 kΩ | 31.9 pF (34 units + 6.1 pF MIM) |
 | Rp | 682 kΩ | — |
 
-- **Trim bank:** binary-weighted MIM capacitors from the pin, each switched to ground by an NMOS transistor, with
-  the external pin capacitance (about 4–9 pF) completing the top-end shunt capacitance.
+- **Trim bank:** binary-weighted MIM capacitors (drawn 0.3, 0.6, 1.2, 2.4, 4.8 pF), each switched to ground by an
+  NMOS transistor. The external pin capacitance (about 4–9 pF) completes the top-end shunt capacitance.
 - **Resistors:** xhigh-poly, 0.35 µm wide, R ≈ 5.71 kΩ/µm × L + 0.62 kΩ per segment.
 - **Size:** 2 × 2 tiles, 334.9 × 225.8 µm. The α = 0.5 block is on the left, the α = 0.7 block on the right, and the
   resistor array and trim switches are in the centre.
