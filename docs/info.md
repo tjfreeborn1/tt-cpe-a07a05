@@ -53,7 +53,28 @@ models):
 
 ## How to test
 
-You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 20 Hz – 10 MHz).
+You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 20 Hz – 10 MHz; DC bias is part of
+its standard specification).
+
+**Connection (four-terminal pair, kept intact to the chip).** Bring the analyzer's Hc/Hp/Lp/Lc to the carrier with
+either:
+- Keysight four-terminal-pair test leads (16048A, 1 m, DC–30 MHz), with the cable-length setting at 1 m and
+  open/short compensation; or
+- four identical short BNC cables (same type and length, ideally under about 30 cm), with the adapter/cable setting at
+  none (0 m) and **open/short/load** compensation. The load step corrects the phase error that uncharacterized cables
+  add. Use a known RC part as the load, measured once directly on the analyzer's front panel.
+
+In both cases, join the four shields at the far end. Join Hc and Hp at the `ua` pin and Lc and Lp at the adjacent GND
+pin.
+
+A short adapter, or an interposer between the carrier and the demoboard, works best. It routes `ua[0]` and `ua[1]`
+straight to the BNCs and does not pass them down to the demoboard. Kelvin/alligator clip leads (16089 series) are
+specified only to 100 kHz. They cannot cover the top of the band, or the trim calibration that depends on it, so use
+them only for a rough low-frequency check.
+
+**Validate the setup before measuring the chip.** Measure a second known part (for example 1 MΩ ∥ 10 pF) through the
+same connection and compare it with a direct front-panel measurement. The phase should agree within about 0.2° up to
+2 MHz.
 
 1. **Prepare the board.** The TT ETR demoboard v3 has a 10 MΩ pull-down to ground on every analog pin. Lift it on
    the two pins used, or measure the carrier without the demoboard. Left in place it sits in parallel with the
@@ -78,6 +99,7 @@ You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 
      (100 Hz). At 300 mVrms it is ±1.5° at 126 Hz. In simulation the larger signal moves the phase by only 0.04°.
    - At 1.0 V bias and 100 mVrms, the simulated current distortion is 0.3–0.4 % at 1–2 kHz. The impedance changes by
      less than 0.1 % compared with a 10 mVrms signal.
+   - Before sweeping all codes, compare the code-0 readings with the checkpoint table below.
 5. Calibrate the trim code: measure the phase from 20 Hz to 10 MHz for each code 0–31 and keep the code with the
    widest continuous band within ±2.5° of −90α°. This takes 32 sweeps, about 10 minutes per pin.
    `test/analyze_e4990.py` does this from the 32 exported files and fits α and Cα.
@@ -93,6 +115,21 @@ You need an impedance analyzer with DC bias (designed around a Keysight E4990A, 
 6. Leave the other analog pin unconnected or idle while measuring. The on-chip crosstalk between `ua[0]` and `ua[1]`
    is −54 dB at 10 MHz; package and board coupling will be larger.
 7. Repeat at 0.7 V and 1.5 V bias, recalibrating the code each time, to measure the Cα tuning.
+
+**Checkpoint at code 0 (1.0 V bias), before sweeping all codes.** Expect these readings within a few percent. The
+phase near 1 MHz is not yet flat at code 0; the trim fixes that.
+
+| Pin | 100 Hz | 1 kHz | 100 kHz | 1 MHz |
+|---|---|---|---|---|
+| `ua[0]` (α = 0.7) | 6.9 MΩ ∠−60° | 1.24 MΩ ∠−63° | 50 kΩ ∠−59° | 12 kΩ ∠−48° |
+| `ua[1]` (α = 0.5) | 680 kΩ ∠−5° | 477 kΩ ∠−36° | 45 kΩ ∠−36° | 25 kΩ ∠−48° |
+
+Fault signatures:
+- `ua[0]` at 100 Hz reads about 4.7 MΩ ∠−37°: a pull-down or other leakage path is still connected.
+- Nothing has a flat phase anywhere: there is no DC bias.
+- The phase sits near −45° where −63° was expected: wrong pin, or `ui_in` and `uio_in` swapped.
+- The best code is 0: too much uncompensated external capacitance. The best code is 31: the on-chip bus capacitance
+  was compensated away (open taken with the project deselected).
 
 **Expected measurement result.** A simulated rehearsal fed synthetic E4990A data, at both typical and guaranteed-limit
 analyzer accuracy, through this procedure. It used 100 Monte Carlo chips, the extracted TT switch, bus and board,
@@ -113,5 +150,7 @@ compensation at the header and a segment sweep:
 
 ## External hardware
 
-An impedance analyzer with DC bias, such as the Keysight E4990A, and a short fixture from the analog pins to its
-test port.
+An impedance analyzer with DC bias, such as the Keysight E4990A, 20 Hz – 10 MHz. Connect it with either Keysight
+four-terminal-pair test leads or four matched short BNC cables (the latter with open/short/load compensation), via a
+short adapter or interposer at the carrier that keeps the analog pins off the demoboard pull-downs. Do not use Kelvin
+or alligator clip leads, which are specified only to 100 kHz.
