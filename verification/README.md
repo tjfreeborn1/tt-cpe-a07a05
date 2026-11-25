@@ -40,3 +40,4 @@ are unaffected.
 - `signoff_B.md`: RC extraction, corners on the RC netlist, Monte Carlo, trim coverage.
 - `signoff_C.md`: control path, coupling, reliability.
 - `signoff_D.md`: independent review and the resulting fixes.
+- `signoff_D12.md`: the CI build artifact matches the verified GDS; physical checks re-run on the committed file.
