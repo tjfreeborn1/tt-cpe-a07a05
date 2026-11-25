@@ -28,17 +28,24 @@ spread of the pin capacitance and process corners.
 
 The DC bias applied by the impedance analyzer (0.7–1.5 V) changes the MOS-capacitor values and so tunes Cα by about 8 %.
 
-Post-layout simulated performance (extracted layout, SKY130 models, phase within ±2.5° of the target, best trim
-code per chip):
+Post-layout simulated performance (extracted layout, SKY130 models, best trim code per chip, worst of 12 pin-path
+models):
 
-| Pin | Per chip, Monte Carlo: typical / 3σ limit / worst | Band shared by all 828 corner cases | Fitted α | Cα (1.0 V, typical, ±1σ) |
-|---|---|---|---|---|
-| `ua[0]` α = 0.7 | 4.31 / 4.23 / 4.25 decades | 4.12 decades, 126 Hz – 1.68 MHz | 0.713 | 1.66 nF·s^-0.3 ± 1.2 % |
-| `ua[1]` α = 0.5 | 2.31 / 2.24 / 2.25 decades | 2.12 decades, 1.9 kHz – 251 kHz | 0.500 | 30.0 nF·s^-0.5 ± 2.5 % |
+| Pin | Phase within ±2.5°: median / 99 % of chips at least / worst chip | Phase within ±3°: median / worst | Band shared by all 828 corner cases (±2.5°) | Fitted α | Cα at 1.0 V: typical ±1σ (range over all corners) |
+|---|---|---|---|---|---|
+| `ua[0]` α = 0.7 | 4.32 / 4.28 / 3.96 decades | 4.38 / 4.32 decades | 4.12 decades, 126 Hz – 1.68 MHz | 0.713 | 1.66 nF·s^-0.3 ± 1.1 % (1.56 – 1.76) |
+| `ua[1]` α = 0.5 | 2.33 / 2.29 / 1.99 decades | 2.38 / 2.34 decades | 2.12 decades, 1.9 kHz – 251 kHz | 0.500 | 30.1 nF·s^-0.5 ± 2.3 % (26.2 – 32.4) |
 
-The Monte Carlo covers 400 samples: 200 at the typical MOS corner and 50 at each of ss/ff/sf/fs. Each sample has
-device mismatch plus global resistor and MIM variation, and was evaluated with all 12 pin-path models. Results with
-and without the wiring resistance agree to 0.03 decades.
+- **Monte Carlo coverage:** 500 samples, 300 at the typical MOS corner and 50 at each of ss/ff/sf/fs. Each sample has
+  per-device mismatch plus global resistor and MIM variation, with 3σ equal to the PDK corners.
+- **Why there is a small tail:** the in-band phase ripple peaks at about ±2.2°, close to the ±2.5° limit. In about
+  1 % of chips mismatch pushes one ripple peak past 2.5°, which splits the band:
+  - α = 0.5: the peak near 170 kHz.
+  - α = 0.7: one sample, with a 500 Ω / 4 pF pin.
+  - At ±3° no chip shows this.
+- **How Cα is defined:** it is fitted over each chip's own ±2.5° band with the nominal 100 Ω / 6.5 pF pin model. Its
+  units follow the fitted α. Forcing α to exactly 0.7 raises Cα by about 16 %.
+- **Wiring resistance:** results with and without it agree to 0.03 decades.
 
 ![Layout](layout.png)
 

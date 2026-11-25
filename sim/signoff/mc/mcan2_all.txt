@@ -1,0 +1,45 @@
+tt: 300 samples, 0 failed runs
+  cpe_a07 nom25   : mean 4.336 sd 0.018 | min 4.283 | p1 4.295 p5 4.308 | mean-3sd 4.283
+  cpe_a07 worst25 : mean 4.321 sd 0.027 | min 3.957 | p1 4.278 p5 4.299 | mean-3sd 4.239
+  cpe_a07 worst30 : mean 4.373 sd 0.018 | min 4.324 | p1 4.335 p5 4.346 | mean-3sd 4.319
+  cpe_a07 alpha 0.7130 +- 0.0007; Ca 1.660 +- 1.12 %; codes 1-25
+  cpe_a05 nom25   : mean 2.335 sd 0.024 | min 1.998 | p1 2.311 p5 2.316 | mean-3sd 2.264
+  cpe_a05 worst25 : mean 2.323 sd 0.032 | min 1.992 | p1 2.298 p5 2.309 | mean-3sd 2.229
+  cpe_a05 worst30 : mean 2.377 sd 0.012 | min 2.343 | p1 2.350 p5 2.359 | mean-3sd 2.340
+  cpe_a05 alpha 0.5002 +- 0.0015; Ca 30.054 +- 2.29 %; codes 3-26
+ss: 50 samples, 0 failed runs
+  cpe_a07 nom25   : mean 4.333 sd 0.019 | min 4.299 | p1 4.300 p5 4.305 | mean-3sd 4.276
+  cpe_a07 worst25 : mean 4.318 sd 0.018 | min 4.289 | p1 4.289 p5 4.290 | mean-3sd 4.262
+  cpe_a07 worst30 : mean 4.369 sd 0.018 | min 4.340 | p1 4.340 p5 4.342 | mean-3sd 4.317
+  cpe_a07 alpha 0.7131 +- 0.0009; Ca 1.621 +- 1.29 %; codes 1-23
+  cpe_a05 nom25   : mean 2.334 sd 0.013 | min 2.300 | p1 2.303 p5 2.311 | mean-3sd 2.293
+  cpe_a05 worst25 : mean 2.324 sd 0.011 | min 2.294 | p1 2.297 p5 2.304 | mean-3sd 2.289
+  cpe_a05 worst30 : mean 2.374 sd 0.013 | min 2.345 | p1 2.346 p5 2.353 | mean-3sd 2.336
+  cpe_a05 alpha 0.5000 +- 0.0014; Ca 29.629 +- 2.78 %; codes 4-24
+ff: 50 samples, 0 failed runs
+  cpe_a07 nom25   : mean 4.337 sd 0.020 | min 4.293 | p1 4.294 p5 4.304 | mean-3sd 4.276
+  cpe_a07 worst25 : mean 4.324 sd 0.020 | min 4.276 | p1 4.279 p5 4.286 | mean-3sd 4.264
+  cpe_a07 worst30 : mean 4.376 sd 0.020 | min 4.327 | p1 4.329 p5 4.343 | mean-3sd 4.316
+  cpe_a07 alpha 0.7131 +- 0.0009; Ca 1.698 +- 1.11 %; codes 3-26
+  cpe_a05 nom25   : mean 2.339 sd 0.012 | min 2.308 | p1 2.310 p5 2.316 | mean-3sd 2.302
+  cpe_a05 worst25 : mean 2.322 sd 0.043 | min 2.034 | p1 2.164 p5 2.306 | mean-3sd 2.194
+  cpe_a05 worst30 : mean 2.378 sd 0.012 | min 2.355 | p1 2.357 p5 2.363 | mean-3sd 2.342
+  cpe_a05 alpha 0.4998 +- 0.0012; Ca 30.606 +- 1.96 %; codes 6-27
+sf: 50 samples, 0 failed runs
+  cpe_a07 nom25   : mean 4.340 sd 0.018 | min 4.291 | p1 4.301 p5 4.315 | mean-3sd 4.285
+  cpe_a07 worst25 : mean 4.326 sd 0.018 | min 4.287 | p1 4.290 p5 4.296 | mean-3sd 4.272
+  cpe_a07 worst30 : mean 4.378 sd 0.018 | min 4.338 | p1 4.339 p5 4.348 | mean-3sd 4.325
+  cpe_a07 alpha 0.7126 +- 0.0008; Ca 1.721 +- 1.16 %; codes 3-27
+  cpe_a05 nom25   : mean 2.335 sd 0.014 | min 2.305 | p1 2.308 p5 2.313 | mean-3sd 2.292
+  cpe_a05 worst25 : mean 2.326 sd 0.014 | min 2.290 | p1 2.295 p5 2.307 | mean-3sd 2.284
+  cpe_a05 worst30 : mean 2.376 sd 0.011 | min 2.343 | p1 2.349 p5 2.360 | mean-3sd 2.343
+  cpe_a05 alpha 0.4998 +- 0.0011; Ca 30.837 +- 1.96 %; codes 7-27
+fs: 50 samples, 0 failed runs
+  cpe_a07 nom25   : mean 4.338 sd 0.019 | min 4.294 | p1 4.295 p5 4.300 | mean-3sd 4.281
+  cpe_a07 worst25 : mean 4.324 sd 0.017 | min 4.282 | p1 4.283 p5 4.297 | mean-3sd 4.273
+  cpe_a07 worst30 : mean 4.374 sd 0.017 | min 4.332 | p1 4.333 p5 4.345 | mean-3sd 4.322
+  cpe_a07 alpha 0.7133 +- 0.0008; Ca 1.602 +- 1.09 %; codes 1-23
+  cpe_a05 nom25   : mean 2.335 sd 0.010 | min 2.311 | p1 2.312 p5 2.317 | mean-3sd 2.304
+  cpe_a05 worst25 : mean 2.327 sd 0.010 | min 2.302 | p1 2.305 p5 2.309 | mean-3sd 2.296
+  cpe_a05 worst30 : mean 2.378 sd 0.011 | min 2.357 | p1 2.357 p5 2.359 | mean-3sd 2.345
+  cpe_a05 alpha 0.5008 +- 0.0013; Ca 29.137 +- 2.12 %; codes 4-23

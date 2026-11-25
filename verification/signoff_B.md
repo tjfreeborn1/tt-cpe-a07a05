@@ -71,3 +71,5 @@ These checks ran on the submitted GDS (md5 `56774a0aaaf0854e4a37b15ef889f967`). 
   below 0).
 - **Resolution:** being one code off from the best costs about 0.4 decades (median), so the bench calibration must
   find the exact code. The full code sweep in B6 does this.
+
+> **Superseded in part (2026-11-25):** the α = 0.5 B6 Monte Carlo figures are replaced by the revised 500-sample run in `signoff_D.md`.

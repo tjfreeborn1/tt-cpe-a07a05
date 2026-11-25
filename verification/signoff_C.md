@@ -66,3 +66,5 @@ Each figure is the worst error between 20 Hz and 10 MHz, relative to the current
 - **Latch-up:** rule LU.2 passed in the precheck (tap within 15 µm of every n-diffusion).
 - **ESD:** the Tiny Tapeout pads provide it; there are no on-chip ESD devices in the design.
 - The datasheet now has a "Safe operating limits" table.
+
+> **Correction (2026-11-25):** 1 Vrms is no longer an allowed test level (see `signoff_D.md`, S1). The maximum is now the smaller of (1.8 V − bias) and (bias − 0.5 V) as a peak value: 0.35 Vrms at 1.0 V bias. The C10 current and self-heating figures above are worst-case abuse values.
