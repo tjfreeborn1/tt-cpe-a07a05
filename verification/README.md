@@ -44,3 +44,10 @@ are unaffected.
 - `signoff_V.md`: extra validation (model-error envelope, TT switch and board, model physics, measurement rehearsal).
 
 The scripts behind these results, the tool versions used, and how to rerun them are described in `sim/README.md`.
+
+## Designer acceptance (2026-11-25)
+
+The designer (T. Freeborn) accepted the following known limitations for this first prototype, with no design change:
+the small ±2.5° margin (approximately 1% of chips lose part of the band at ±2.5°, none at ±3°), the sensitivity of the
+α = 0.5 branch-2 resistor ratio (±5% to ±10%), and the dependence on the pin capacitance (which makes the compensation
+procedure important).
